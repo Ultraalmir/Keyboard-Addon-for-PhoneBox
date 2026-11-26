@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Documentation
+- Clarify .NET 10 Windows compatibility in both user guides and the project website; Windows 10 is limited to Enterprise/LTSC releases that remain within Microsoft's support lifecycle and are supported by .NET 10.
+- Move maintainer-only build, self-test, packaging, Git and release commands from the user-facing READMEs into `docs/PUBLISHING.md`.
+- Correct the test plan to describe migration from legacy schema v1 and schema v2 settings into schema v3.
+
+### Accessibility
+- Localize project website ARIA labels with the PT-BR / English language selector.
+
 ## [1.4.0] - 2026-11-25
 
 ### Added

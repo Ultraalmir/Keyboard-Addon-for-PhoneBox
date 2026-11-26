@@ -1,6 +1,6 @@
 # Test plan
 
-Run the automated checks on Windows 10/11 x64 with the .NET 10 SDK:
+Run the automated checks on a .NET 10-supported Windows 11 x64 release, or on a Windows 10 Enterprise/LTSC release that remains within Microsoft's support lifecycle and is supported by .NET 10:
 
 ```powershell
 .\scripts\publish-windows.ps1
@@ -13,7 +13,7 @@ The publish script restores, builds, runs the built-in self-tests, and produces 
 The built-in self-test verifies:
 
 - Ten direct page slots and Windows virtual-key mappings, including Numpad 0 for page 10.
-- Migration of existing v1 settings with seven custom page shortcuts into v2 without losing user combinations.
+- Migration of legacy v1 settings and schema v2 settings into schema v3, preserving custom page shortcuts and defaulting the newer tray-icon preference to off when it is absent.
 - Hotkey registration, suspension, and re-registration through the owning window thread.
 - Default Next/Previous Numpad + and Numpad - mappings.
 - Modifier validation and duplicate detection across all direct and relative actions.

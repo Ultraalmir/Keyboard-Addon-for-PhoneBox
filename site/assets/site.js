@@ -4,10 +4,11 @@
   const messages = {
     'pt-BR': {
       navFeatures:'Recursos', navDemo:'Demonstração', navInstall:'Instalação', navFaq:'Dúvidas',
+      brandHomeLabel:'Início do PhoneBox Keyboard Add-on', mainNavigationLabel:'Navegação principal', languagePickerLabel:'Seletor de idioma', projectHighlightsLabel:'Destaques do projeto', demoPreviousPageLabel:'Página de demonstração anterior', demoNextPageLabel:'Próxima página de demonstração',
       eyebrow:'COMPLEMENTO INDEPENDENTE PARA PHONEBOX',
       heroTitle:'Suas páginas do PhoneBox.<br><em>Um atalho de distância.</em>',
       heroLead:'Navegue pelo painel do seu celular usando combinações globais do teclado. Configure cada tecla do seu jeito e deixe o PhoneBox sempre a um toque de distância — sem modificar o aplicativo original.',
-      downloadLatest:'Baixar versão mais recente', viewSource:'Ver código-fonte', windowsOnly:'Windows 10 / 11 · x64', communityProject:'Projeto comunitário independente', running:'EM EXECUÇÃO',
+      downloadLatest:'Baixar versão mais recente', viewSource:'Ver código-fonte', windowsOnly:'Windows 11 · x64 / Windows 10 Enterprise-LTSC em versões suportadas e compatíveis com .NET 10', communityProject:'Projeto comunitário independente', running:'EM EXECUÇÃO',
       configurableActions:'ações configuráveis', quietMode:'Modo silencioso', trayOptional:'Ícone de bandeja opcional',
       statDirect:'atalhos diretos para páginas', statRelative:'ações de navegação relativa', statChanges:'arquivos do PhoneBox modificados', statLicense:'licença de código aberto',
       featuresEyebrow:'FEITO PARA O SEU FLUXO', featuresTitle:'Pequeno no Windows.<br><em>Grande no controle.</em>', featuresLead:'O add-on roda em segundo plano e transforma atalhos do teclado em comandos de navegação para o agente local do PhoneBox.',
@@ -25,7 +26,7 @@
       step1Title:'Baixe a versão', step1Text:'Abra a página de Releases e baixe o pacote mais recente para Windows x64.', step1Link:'Abrir Releases ↗',
       step2Title:'Instale o add-on', step2Text:'Extraia o ZIP, abra PowerShell na pasta extraída e execute o instalador incluído.',
       step3Title:'Configure e use', step3Text:'Teste a conexão com o agente PhoneBox, capture suas combinações e salve.', step3Note:'Pronto para navegar.',
-      requirementsTitle:'Você vai precisar de', requirementsText:'Windows 10/11 x64 e do agente PhoneBox em execução no computador.', phoneboxProject:'Projeto PhoneBox ↗',
+      requirementsTitle:'Você vai precisar de', requirementsText:'Windows 11 x64 em versão compatível com .NET 10, ou Windows 10 Enterprise/LTSC em versão ainda suportada pela Microsoft e compatível com .NET 10; e o agente PhoneBox em execução.', phoneboxProject:'Projeto PhoneBox ↗',
       faqEyebrow:'ANTES DE INSTALAR', faqTitle:'Perguntas rápidas.', faqLead:'O essencial sobre compatibilidade, privacidade e funcionamento.',
       faq1Q:'O add-on modifica o PhoneBox?', faq1A:'Não. É um complemento independente para Windows. Ele envia solicitações de navegação à API local do agente PhoneBox e não substitui nem injeta arquivos no aplicativo original.',
       faq2Q:'Ele funciona com outros programas abertos?', faq2A:'Sim. As combinações são registradas globalmente pelo Windows. Se outro aplicativo já usar a mesma combinação, o registro pode falhar; escolha outra tecla no painel.',
@@ -37,10 +38,11 @@
     },
     en: {
       navFeatures:'Features', navDemo:'Demo', navInstall:'Install', navFaq:'FAQ',
+      brandHomeLabel:'PhoneBox Keyboard Add-on home', mainNavigationLabel:'Main navigation', languagePickerLabel:'Language selector', projectHighlightsLabel:'Project highlights', demoPreviousPageLabel:'Previous demo page', demoNextPageLabel:'Next demo page',
       eyebrow:'INDEPENDENT PHONEBOX ADD-ON',
       heroTitle:'Your PhoneBox pages.<br><em>One keystroke away.</em>',
       heroLead:'Navigate your phone dashboard with global keyboard shortcuts. Choose the combinations that fit your workflow and keep PhoneBox one keystroke away — without modifying the original app.',
-      downloadLatest:'Download latest release', viewSource:'View source code', windowsOnly:'Windows 10 / 11 · x64', communityProject:'Independent community project', running:'RUNNING',
+      downloadLatest:'Download latest release', viewSource:'View source code', windowsOnly:'Windows 11 · x64 / supported Windows 10 Enterprise/LTSC releases', communityProject:'Independent community project', running:'RUNNING',
       configurableActions:'configurable actions', quietMode:'Quiet background mode', trayOptional:'Optional tray icon',
       statDirect:'direct page shortcuts', statRelative:'relative navigation actions', statChanges:'PhoneBox files modified', statLicense:'open-source license',
       featuresEyebrow:'BUILT AROUND YOUR WORKFLOW', featuresTitle:'Small on Windows.<br><em>Big on control.</em>', featuresLead:'The add-on runs in the background and turns keyboard shortcuts into navigation commands for the local PhoneBox agent.',
@@ -58,7 +60,7 @@
       step1Title:'Download the release', step1Text:'Open the Releases page and download the latest Windows x64 package.', step1Link:'Open Releases ↗',
       step2Title:'Install the add-on', step2Text:'Extract the ZIP, open PowerShell in the extracted folder, and run the included installer.',
       step3Title:'Configure and go', step3Text:'Test the PhoneBox agent connection, capture your combinations, and save.', step3Note:'Ready to navigate.',
-      requirementsTitle:'What you need', requirementsText:'Windows 10/11 x64 and the PhoneBox agent running on your computer.', phoneboxProject:'PhoneBox project ↗',
+      requirementsTitle:'What you need', requirementsText:'A .NET 10-supported Windows 11 x64 release, or a Windows 10 Enterprise/LTSC release still within the Microsoft support lifecycle and supported by .NET 10, plus the PhoneBox agent running on your computer.', phoneboxProject:'PhoneBox project ↗',
       faqEyebrow:'BEFORE YOU INSTALL', faqTitle:'Quick answers.', faqLead:'The essentials about compatibility, privacy, and how it works.',
       faq1Q:'Does the add-on modify PhoneBox?', faq1A:'No. It is an independent Windows add-on. It sends navigation requests to the local PhoneBox agent API and does not replace or inject files into the original app.',
       faq2Q:'Does it work while other apps are open?', faq2A:'Yes. Shortcuts are registered globally by Windows. If another app already owns the same combination, registration may fail; choose a different key in the panel.',
@@ -83,6 +85,10 @@
     document.querySelectorAll('[data-alt]').forEach((element) => {
       const value = dict[element.dataset.alt];
       if (value) element.alt = value;
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach((element) => {
+      const value = dict[element.dataset.i18nAria];
+      if (value) element.setAttribute('aria-label', value);
     });
     languageButtons.forEach((button) => {
       const active = button.dataset.language === selected;

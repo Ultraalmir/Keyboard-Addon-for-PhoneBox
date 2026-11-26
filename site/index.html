@@ -19,18 +19,18 @@
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="PhoneBox Keyboard Add-on home">
+    <a class="brand" href="#top" aria-label="Início do PhoneBox Keyboard Add-on" data-i18n-aria="brandHomeLabel">
       <img src="assets/phonebox-keyboard.png" alt="" width="42" height="42">
       <span><strong>PhoneBox Keyboard</strong><small>Add-on Pro</small></span>
     </a>
-    <nav class="desktop-nav" aria-label="Navegação principal">
+    <nav class="desktop-nav" aria-label="Navegação principal" data-i18n-aria="mainNavigationLabel">
       <a href="#features" data-i18n="navFeatures">Recursos</a>
       <a href="#demo" data-i18n="navDemo">Demonstração</a>
       <a href="#install" data-i18n="navInstall">Instalação</a>
       <a href="#faq" data-i18n="navFaq">Dúvidas</a>
     </nav>
     <div class="header-actions">
-      <div class="language-switch" role="group" aria-label="Language">
+      <div class="language-switch" role="group" aria-label="Seletor de idioma" data-i18n-aria="languagePickerLabel">
         <button type="button" data-language="pt-BR" class="active" aria-pressed="true">PT</button>
         <button type="button" data-language="en" aria-pressed="false">EN</button>
       </div>
@@ -57,7 +57,7 @@
           </a>
         </div>
         <div class="hero-meta">
-          <span><i class="meta-dot"></i><span data-i18n="windowsOnly">Windows 10 / 11 · x64</span></span>
+          <span><i class="meta-dot"></i><span data-i18n="windowsOnly">Windows 11 · x64 / Windows 10 Enterprise-LTSC em versões suportadas</span></span>
           <span><i class="meta-dot"></i><span data-i18n="communityProject">Projeto comunitário independente</span></span>
         </div>
       </div>
@@ -72,7 +72,7 @@
       </div>
     </section>
 
-    <section class="trust-strip wrap" aria-label="Project highlights">
+    <section class="trust-strip wrap" aria-label="Destaques do projeto" data-i18n-aria="projectHighlightsLabel">
       <div><strong>10</strong><span data-i18n="statDirect">atalhos diretos para páginas</span></div>
       <div><strong>+2</strong><span data-i18n="statRelative">ações de navegação relativa</span></div>
       <div><strong>0</strong><span data-i18n="statChanges">arquivos do PhoneBox modificados</span></div>
@@ -118,7 +118,7 @@
             <div class="screen-subtitle" data-i18n="screenSubtitle">Seu computador, em um só lugar</div>
             <div class="screen-widgets"><div class="widget widget-wide"><small data-i18n="activePage">PÁGINA ATUAL</small><strong id="demoPageName">Home</strong><span id="demoPageNumber">01 / 12</span></div><div class="widget"><small>CPU</small><strong>24<span>%</span></strong><div class="meter"><i style="width:24%"></i></div></div><div class="widget"><small>RAM</small><strong>62<span>%</span></strong><div class="meter"><i style="width:62%"></i></div></div><div class="widget widget-wide"><small data-i18n="shortcutDemo">NAVEGAÇÃO DE DEMONSTRAÇÃO</small><div class="screen-pages" id="screenPages"><i class="selected"></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
           </div>
-          <div class="demo-controls"><button type="button" id="demoPrev" aria-label="Previous demo page">← <span data-i18n="previous">Anterior</span></button><div class="demo-counter" id="demoCounter">1 / 12</div><button type="button" id="demoNext"><span data-i18n="next">Próxima</span> →</button></div>
+          <div class="demo-controls"><button type="button" id="demoPrev" aria-label="Página de demonstração anterior" data-i18n-aria="demoPreviousPageLabel">← <span data-i18n="previous">Anterior</span></button><div class="demo-counter" id="demoCounter">1 / 12</div><button type="button" id="demoNext" aria-label="Próxima página de demonstração" data-i18n-aria="demoNextPageLabel"><span data-i18n="next">Próxima</span> →</button></div>
           <div class="demo-hint" data-i18n="demoInteractiveHint">Demonstração visual: use os botões para simular a navegação. Isso não controla seu telefone.</div>
         </div>
       </div>
@@ -143,7 +143,7 @@
         <article class="step-card"><div class="step-number">02</div><div class="step-icon">▣</div><h3 data-i18n="step2Title">Instale o add-on</h3><p data-i18n="step2Text">Extraia o ZIP, abra PowerShell na pasta extraída e execute o instalador incluído.</p><code>.\install.ps1 -LaunchSettings</code></article>
         <article class="step-card"><div class="step-number">03</div><div class="step-icon">⌘</div><h3 data-i18n="step3Title">Configure e use</h3><p data-i18n="step3Text">Teste a conexão com o agente PhoneBox, capture suas combinações e salve.</p><span class="step-note" data-i18n="step3Note">Pronto para navegar.</span></article>
       </div>
-      <div class="requirements"><div><strong data-i18n="requirementsTitle">Você vai precisar de</strong><span data-i18n="requirementsText">Windows 10/11 x64 e do agente PhoneBox em execução no computador.</span></div><a href="https://github.com/ersinkoc/phonebox" target="_blank" rel="noopener noreferrer" data-i18n="phoneboxProject">Projeto PhoneBox ↗</a></div>
+      <div class="requirements"><div><strong data-i18n="requirementsTitle">Você vai precisar de</strong><span data-i18n="requirementsText">Windows 11 x64 em versão compatível com .NET 10, ou Windows 10 Enterprise/LTSC em versão ainda suportada pela Microsoft e compatível com .NET 10; e o agente PhoneBox em execução.</span></div><a href="https://github.com/ersinkoc/phonebox" target="_blank" rel="noopener noreferrer" data-i18n="phoneboxProject">Projeto PhoneBox ↗</a></div>
     </section>
 
     <section class="section faq-section" id="faq">

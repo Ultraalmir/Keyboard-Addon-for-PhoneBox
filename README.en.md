@@ -2,7 +2,7 @@
 
 Independent Windows companion for navigating PhoneBox pages with global keyboard shortcuts. It does not patch, inject into, or replace PhoneBox files.
 
-![Version](https://img.shields.io/badge/version-1.4.0-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-1.4.0-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 🌐 **Project website:** [ultraalmir.github.io/Keyboard-Addon-for-PhoneBox](https://ultraalmir.github.io/Keyboard-Addon-for-PhoneBox/) · [Latest download](https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox/releases/latest)
 
@@ -51,9 +51,10 @@ The page count/order is discovered dynamically, so relative navigation supports 
 
 ## Requirements
 
-- Windows 10 or Windows 11, x64.
+- Windows 11 x64 on a release listed as supported by .NET 10.
+- Windows 10: Enterprise/LTSC editions only, on releases that remain within Microsoft's support lifecycle and are compatible with .NET 10. See the [.NET compatibility matrix](https://learn.microsoft.com/dotnet/core/install/windows) and [Windows lifecycle information](https://learn.microsoft.com/windows/release-health/release-information).
 - PhoneBox desktop agent running locally (default `http://127.0.0.1:8765`).
-- .NET 10 SDK to build from source.
+
 
 ## Install a release
 
@@ -77,23 +78,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
 The temporary policy ends when that PowerShell window closes. Installation is per-user and does not require administrator privileges.
 
-## Build and package
-
-From the repository root in PowerShell:
-
-```powershell
-.\scripts\publish-windows.ps1
-.\scripts\package.ps1
-```
-
-The publish script restores, builds, runs internal checks (`--self-test`), and publishes a self-contained `win-x64` executable to `artifacts\publish\PhoneBoxKeyboardAddon.exe`. The distributable package is written to `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`.
-
-Manual checks:
-
-```powershell
-& .\artifacts\publish\PhoneBoxKeyboardAddon.exe --self-test
-& .\artifacts\publish\PhoneBoxKeyboardAddon.exe --settings
-```
 
 ## Optional Windows tray icon
 
@@ -133,7 +117,7 @@ Settings remain outside the installation directory and are migrated between vers
 
 ## Known limitations
 
-- Windows 10/11 x64 is the only supported platform.
+- Windows 11 x64 on .NET 10-supported releases; Windows 10 only on Enterprise/LTSC editions and releases that remain within Microsoft's support lifecycle and are compatible with .NET 10.
 - The PhoneBox agent must be running and reachable at the configured address.
 - Next/Previous uses the local cursor described above; the inspected PhoneBox API does not report the currently visible phone page.
 - Windows can refuse global hotkeys already registered by another application; choose another combination in Settings.

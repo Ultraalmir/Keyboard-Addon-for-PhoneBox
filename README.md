@@ -4,7 +4,7 @@
 
 Complemento independente para Windows que permite navegar pelas páginas do PhoneBox com atalhos globais de teclado. Não altera, injeta ou substitui arquivos do PhoneBox.
 
-![Versão](https://img.shields.io/badge/version-1.4.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Versão](https://img.shields.io/badge/version-1.4.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Recursos
 
@@ -52,9 +52,10 @@ O complemento detecta dinamicamente a quantidade e a ordem das páginas habilita
 
 ## Requisitos
 
-- Windows 10 ou Windows 11, x64.
+- Windows 11 x64 em uma versão listada como compatível com .NET 10.
+- Windows 10: somente edições Enterprise/LTSC em versões que ainda estejam dentro do ciclo de suporte da Microsoft e sejam compatíveis com .NET 10. Consulte a [matriz de compatibilidade do .NET](https://learn.microsoft.com/dotnet/core/install/windows) e o [ciclo de vida do Windows](https://learn.microsoft.com/windows/release-health/release-information).
 - Agente PhoneBox em execução no computador. Endereço padrão: `http://127.0.0.1:8765`.
-- Para compilar a partir do código-fonte: .NET 10 SDK.
+
 
 ## Instalar uma versão publicada
 
@@ -78,23 +79,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
 Essa política temporária termina quando a janela do PowerShell é fechada. O instalador não exige privilégios administrativos.
 
-## Compilar e empacotar
-
-No PowerShell, na raiz do repositório:
-
-```powershell
-.\scripts\publish-windows.ps1
-.\scripts\package.ps1
-```
-
-O script restaura dependências, compila, executa os testes internos (`--self-test`) e publica um executável `win-x64` autocontido em `artifacts\publish\PhoneBoxKeyboardAddon.exe`. O pacote distribuível é criado em `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`.
-
-Para validar manualmente:
-
-```powershell
-& .\artifacts\publish\PhoneBoxKeyboardAddon.exe --self-test
-& .\artifacts\publish\PhoneBoxKeyboardAddon.exe --settings
-```
 
 ## Ícone opcional na bandeja do Windows
 
@@ -140,7 +124,7 @@ O cartão **Atalhos registrados** recebe totais calculados pelo agente (`registe
 
 ## Limitações conhecidas
 
-- Windows 10/11 x64 é a única plataforma suportada.
+- Windows 11 x64 em versões compatíveis com .NET 10; Windows 10 somente em edições Enterprise/LTSC e versões que permaneçam dentro do ciclo de suporte da Microsoft e sejam compatíveis com .NET 10.
 - O PhoneBox precisa estar em execução e acessível no endereço configurado.
 - Próxima/Anterior usa o cursor local descrito acima; a API PhoneBox analisada não informa a página atualmente visível no telefone.
 - Se outra aplicação já possuir uma combinação global, o Windows pode recusar o registro. Escolha outra combinação no painel.
