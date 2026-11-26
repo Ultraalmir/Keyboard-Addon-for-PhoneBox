@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ultraalmir.github.io/Keyboard-Addon-for-PhoneBox/sitemap.xml

@@ -4,6 +4,9 @@ Independent Windows companion for navigating PhoneBox pages with global keyboard
 
 ![Version](https://img.shields.io/badge/version-1.4.0-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
+🌐 **Project website:** [ultraalmir.github.io/Keyboard-Addon-for-PhoneBox](https://ultraalmir.github.io/Keyboard-Addon-for-PhoneBox/) · [Latest download](https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox/releases/latest)
+
+
 ## Features
 
 - Up to **10 configurable direct page shortcuts** for the first ten PhoneBox page positions.

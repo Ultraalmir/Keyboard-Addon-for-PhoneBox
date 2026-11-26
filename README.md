@@ -1,5 +1,7 @@
 # PhoneBox Keyboard Add-on
 
+🌐 **Site do projeto:** [ultraalmir.github.io/Keyboard-Addon-for-PhoneBox](https://ultraalmir.github.io/Keyboard-Addon-for-PhoneBox/) · [Download mais recente](https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox/releases/latest)
+
 Complemento independente para Windows que permite navegar pelas páginas do PhoneBox com atalhos globais de teclado. Não altera, injeta ou substitui arquivos do PhoneBox.
 
 ![Versão](https://img.shields.io/badge/version-1.4.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
