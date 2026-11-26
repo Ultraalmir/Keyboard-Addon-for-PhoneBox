@@ -130,28 +130,6 @@ As configurações são armazenadas fora da pasta de instalação e migradas aut
 - Durante a captura de um atalho, os registros globais são suspensos temporariamente para que o navegador receba o teclado. Uma lease de 60 segundos restaura os atalhos se a página fechar inesperadamente.
 - As releases não são assinadas com Authenticode nesta versão; o SmartScreen pode exibir um aviso para executáveis baixados. Verifique o código-fonte, a release e o SHA-256 antes de executar.
 
-## Publicar no GitHub
-
-Crie um repositório vazio e execute na raiz extraída:
-
-```powershell
-git init
-git add .
-git commit -m "Initial release: PhoneBox Keyboard Add-on 1.4.0"
-git branch -M main
-git remote add origin https://github.com/SEU-USUARIO/PhoneBox-Keyboard-Addon.git
-git push -u origin main
-```
-
-O workflow **CI** restaura, compila e executa os testes em Windows. Para criar uma release, publique uma tag:
-
-```powershell
-git tag v1.4.0
-git push origin v1.4.0
-```
-
-O workflow **Release** compila o executável Windows x64, cria o ZIP distribuível, gera SHA-256 e publica os arquivos na página **Releases**.
-
 ## Ícone do aplicativo e desinstalação
 
 O aplicativo e o ícone opcional da bandeja usam o recurso visual `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico` (também configurado como ícone do executável). O painel permite desinstalar o complemento sem executar scripts PowerShell: ele agenda um helper oculto que aguarda o processo encerrar e remove o executável instalado, os atalhos do Menu Iniciar e o atalho da pasta Startup. Por padrão, configurações e logs são preservados. Para apagá-los, o usuário precisa marcar explicitamente **Excluir também configurações e logs** e confirmar a ação.
@@ -169,7 +147,7 @@ O cartão **Atalhos registrados** recebe totais calculados pelo agente (`registe
 
 ## Desenvolvimento
 
-Consulte `docs/ARCHITECTURE.md`, `docs/TEST-PLAN.md`, `CONTRIBUTING.md` e `SECURITY.md`. Para relatar falhas, informe a versão do complemento, a versão do PhoneBox, o Windows, as combinações usadas e o trecho relevante do log (remova dados privados).
+Consulte `docs/ARCHITECTURE.md`, `docs/TEST-PLAN.md`, `docs/PUBLISHING.md`, `CONTRIBUTING.md` e `SECURITY.md`. As instruções de publicação e manutenção do repositório ficam em `docs/PUBLISHING.md`. Para relatar falhas, informe a versão do complemento, a versão do PhoneBox, o Windows, as combinações usadas e o trecho relevante do log (remova dados privados).
 
 ## Licença e afiliação
 

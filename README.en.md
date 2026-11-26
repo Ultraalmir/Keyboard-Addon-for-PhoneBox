@@ -128,28 +128,6 @@ Settings remain outside the installation directory and are migrated between vers
 - During shortcut capture, global registrations are temporarily suspended so the browser can receive key events. A 60-second lease restores them if the page closes unexpectedly.
 - Releases are not Authenticode-signed in this version; SmartScreen may warn about downloaded executables. Verify the source, release and SHA-256 before running.
 
-## Publish to GitHub
-
-Create an empty repository, extract the source archive, and run from the repository root:
-
-```powershell
-git init
-git add .
-git commit -m "Initial release: PhoneBox Keyboard Add-on 1.4.0"
-git branch -M main
-git remote add origin https://github.com/USERNAME/PhoneBox-Keyboard-Addon.git
-git push -u origin main
-```
-
-The **CI** workflow builds and runs checks on Windows. To publish a release:
-
-```powershell
-git tag v1.4.0
-git push origin v1.4.0
-```
-
-The **Release** workflow builds the Windows x64 executable, packages the ZIP, generates SHA-256, and publishes the files to GitHub Releases.
-
 ## Known limitations
 
 - Windows 10/11 x64 is the only supported platform.
@@ -161,7 +139,7 @@ The **Release** workflow builds the Windows x64 executable, packages the ZIP, ge
 
 ## Development
 
-See `docs/ARCHITECTURE.md`, `docs/TEST-PLAN.md`, `CONTRIBUTING.md`, and `SECURITY.md`. When reporting a bug, include the add-on version, PhoneBox version, Windows version, key combinations and relevant log excerpt (remove private data).
+See `docs/ARCHITECTURE.md`, `docs/TEST-PLAN.md`, `docs/PUBLISHING.md`, `CONTRIBUTING.md`, and `SECURITY.md`. Repository publishing and maintainer instructions are kept in `docs/PUBLISHING.md`. When reporting a bug, include the add-on version, PhoneBox version, Windows version, key combinations and relevant log excerpt (remove private data).
 
 ## License and affiliation
 
