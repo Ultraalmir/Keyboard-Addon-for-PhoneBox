@@ -1,0 +1,94 @@
+# Test plan
+
+Run the automated checks on Windows 10/11 x64 with the .NET 10 SDK:
+
+```powershell
+.\scripts\publish-windows.ps1
+```
+
+The publish script restores, builds, runs the built-in self-tests, and produces a self-contained `win-x64` executable.
+
+## Automated checks
+
+The built-in self-test verifies:
+
+- Ten direct page slots and Windows virtual-key mappings, including Numpad 0 for page 10.
+- Migration of existing v1 settings with seven custom page shortcuts into v2 without losing user combinations.
+- Hotkey registration, suspension, and re-registration through the owning window thread.
+- Default Next/Previous Numpad + and Numpad - mappings.
+- Modifier validation and duplicate detection across all direct and relative actions.
+- Relative cursor wraparound, configured-start fallback, and direction handling.
+- Loopback URL validation and settings JSON round-trip.
+- Dispatch to the HWND-owning thread and rejection of off-thread hotkey manager mutation.
+
+## Manual Windows acceptance checklist
+
+1. Install with `powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1`.
+2. Open **Start Menu → PhoneBox Keyboard Add-on → Configurações**.
+3. Confirm the PhoneBox connection test succeeds while the PhoneBox agent is running.
+4. Refresh the page list and compare the count/order with enabled global pages in PhoneBox. If you use per-phone page profiles, confirm that the global list matches the connected panel; automatic profile selection is not supported in this release.
+5. With at least ten enabled pages, configure and test all direct slots 1–10. Confirm Numpad 0 can be used for page 10.
+6. Test Next/Previous with a PhoneBox panel containing more than ten enabled pages; confirm all pages can be reached using relative navigation.
+7. Test wraparound from the last page to the first and from the first to the last.
+8. Navigate to a page by touch/swipe in PhoneBox, select that page in **Posição inicial / sincronizar navegação relativa**, save, and verify Next/Previous continues from that position.
+9. Trigger a direct-page shortcut and then Next/Previous; confirm the cursor follows the last accepted direct navigation.
+10. Simulate a PhoneBox connection failure while pressing Next/Previous; verify the local cursor is not committed when the HTTP navigation fails.
+11. Change each shortcut with **Capturar**, including a combination already registered by the add-on. Confirm the add-on suspends its hotkeys while listening, accepts the new combination, and restores hotkeys after capture and save. Repeat Save and Capture several times.
+12. Cancel capture and confirm all previous hotkeys are restored. Close the settings tab while capture is active and confirm the 60-second lease restores hotkeys automatically.
+13. Disable one direct slot, Next, and Previous individually; confirm each stops firing. Re-enable them and confirm they work.
+14. Disable all shortcuts and confirm every action is inactive; re-enable them.
+15. Configure a duplicate combination between a direct page and Next/Previous; confirm the settings API rejects it with a clear validation message.
+16. Reserve a conflicting hotkey in another application and confirm the UI reports that Windows could not register it.
+17. Enable startup, sign out/in or restart Windows, and confirm the add-on starts without a console, main window, or tray icon.
+18. Open Settings from the Start Menu while the background instance is running and confirm a second process is not created.
+19. Update the executable and confirm settings are migrated/preserved.
+20. Run `scripts\uninstall.ps1`; confirm the app and shortcuts are removed while settings/logs remain unless `-RemoveSettings` is specified.
+
+## Known navigation limitation
+
+PhoneBox does not currently expose the phone's visible page in the public local API. Relative navigation therefore uses the add-on's last-known cursor. It is exact after add-on page shortcuts and after manually setting the cursor in Settings, but it cannot automatically detect page changes made by touch, swipe, PhoneBox rules, volume keys, or another controller.
+
+## Environment limitations
+
+Global hotkey capture, Windows startup integration, USB-connected PhoneBox navigation, and self-contained Windows publishing must be validated on a Windows machine. GitHub Actions runs the Windows build and built-in checks; hardware and user-session acceptance still requires local testing.
+
+
+## Testes adicionais da versão 1.2.0
+
+1. Com `ShowTrayIcon=false`, iniciar o complemento em segundo plano e confirmar que nenhum ícone do complemento aparece na área de notificação.
+2. Abrir **Configurações** pelo Menu Iniciar, habilitar **Mostrar ícone na bandeja** e salvar. Confirmar que o ícone aparece sem reiniciar o processo.
+3. Abrir o menu do ícone: confirmar **Abrir configurações**, alternância de atalhos globais e **Sair**.
+4. Desabilitar os atalhos pelo menu da bandeja; confirmar no painel e por hotkey que foram desregistrados. Habilitá-los novamente.
+5. Desabilitar o ícone pelo painel e salvar; confirmar que desaparece imediatamente, mas o processo e as hotkeys continuam funcionando.
+6. Reiniciar o complemento com a opção ligada e confirmar que o ícone volta; repetir com a opção desligada e confirmar ausência.
+7. Modificar `Web/settings.css`, publicar novamente e confirmar que a alteração visual aparece em `/settings.css`.
+
+
+### Status summary and uninstall
+
+- Confirm the `/api/status` response includes `registeredCount`, `enabledRegistrationCount` and `actionCount`, and that the panel displays those server-provided totals rather than inferring the totals from JSON property enumeration.
+
+- Confirm the status card reports 12 configurable actions and a non-zero enabled count when default hotkeys are enabled.
+- Disable all shortcuts and confirm the registered count becomes zero while enabled/configurable totals remain accurate.
+- Enable the tray icon and confirm the custom PhoneBox Keyboard icon appears; disable it and confirm the icon disappears.
+- Open the settings panel from the installed executable and run the in-panel uninstall with the data-preservation checkbox unchecked; confirm the program and shortcuts are removed while settings/logs remain.
+- Reinstall, then repeat with the data-removal checkbox checked and confirm settings/logs are removed only after explicit confirmation.
+- Run the panel from a development/publish folder and confirm in-panel uninstall is unavailable.
+
+
+## Versão 1.3.0 — status, ícone e desinstalação
+
+1. Confirmar que `/api/status` fornece `registeredCount`, `enabledRegistrationCount` e `actionCount`. Com os padrões, a interface deve mostrar 9 ações habilitadas de 12 ações configuráveis; o total efetivamente registrado depende de conflitos de hotkey no Windows.
+2. Desabilitar globalmente os atalhos e confirmar que o contador de registrados passa a zero, enquanto os totais de ações habilitadas/configuráveis continuam corretos.
+3. Habilitar o ícone da bandeja e verificar o ícone personalizado em 16/32 px, menu de contexto e duplo clique; desabilitar e confirmar que ele desaparece.
+4. Abrir o painel pela instalação no Menu Iniciar. Confirmar que a opção de desinstalar fica habilitada.
+5. Desinstalar sem marcar a remoção de dados: confirmar que o executável, atalhos do Menu Iniciar e Startup são removidos, enquanto `settings.json` e logs permanecem.
+6. Reinstalar, marcar a remoção de dados, confirmar duas vezes e verificar que configurações/logs também são removidos.
+7. Executar uma cópia de desenvolvimento/publicação fora da pasta instalada e confirmar que o painel não oferece desinstalação dessa cópia.
+
+## Bilingual UI regression
+
+- Switch from PT to EN and confirm all panel labels, generated shortcut rows, status text, capture dialog, confirmations, and toast messages are English.
+- Switch back to PT and confirm Brazilian Portuguese is restored.
+- Restart the add-on and confirm the last selected language is retained.
+- Upgrade from an earlier settings file without `uiLanguage`; confirm it defaults to `pt-BR` without resetting shortcuts.

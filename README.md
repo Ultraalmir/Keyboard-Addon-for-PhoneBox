@@ -1,0 +1,180 @@
+# PhoneBox Keyboard Add-on
+
+Complemento independente para Windows que permite navegar pelas páginas do PhoneBox com atalhos globais de teclado. Não altera, injeta ou substitui arquivos do PhoneBox.
+
+![Versão](https://img.shields.io/badge/version-1.4.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+
+## Recursos
+
+- Até **10 atalhos diretos configuráveis**, um para cada uma das dez primeiras posições de página do PhoneBox.
+- Atalhos separados e configuráveis para **Próxima página** e **Página anterior**. Eles percorrem a lista inteira de páginas habilitadas, mesmo quando o painel tem mais de dez páginas.
+- Captura de combinações pelo botão **Capturar** da interface HTML local.
+- Ativação/desativação global e individual para cada ação.
+- Painel bilíngue com seletor Português (Brasil) / English; o idioma escolhido é salvo e mantido após reinicializações e atualizações.
+- Operação silenciosa em segundo plano: sem console ou janela principal; o ícone da bandeja é opcional e controlado no painel HTML.
+- Inicialização opcional com o Windows, usando um atalho na pasta Startup do usuário.
+- Prevenção de instâncias duplicadas, log com rotação e configurações preservadas ao atualizar o complemento.
+- Executável Windows x64 autocontido; o usuário final não precisa instalar o runtime .NET.
+
+## Como os atalhos funcionam
+
+A configuração inicial preserva os sete atalhos da primeira versão e adiciona os novos recursos:
+
+| Ação | Atalho padrão | Estado inicial |
+|---|---|---|
+| Página 1 a 7 | `Ctrl + Numpad 1` a `Ctrl + Numpad 7` | Ativados |
+| Página 8 | `Ctrl + Numpad 8` | Desativado |
+| Página 9 | `Ctrl + Numpad 9` | Desativado |
+| Página 10 | `Ctrl + Numpad 0` | Desativado |
+| Próxima página | `Ctrl + Numpad +` | Ativado |
+| Página anterior | `Ctrl + Numpad -` | Ativado |
+
+Essas combinações são apenas os padrões. O usuário pode capturar outra combinação para cada uma das 12 ações, ativar/desativar ações individualmente e desligar todos os atalhos de uma vez. Pelo menos um modificador (`Ctrl`, `Alt`, `Shift` ou `Win`) é obrigatório. Combinações já registradas pelo Windows ou por outro aplicativo podem ser recusadas; o painel informa o conflito.
+
+Para teclas numéricas do teclado numérico, mantenha o NumLock ligado. O sistema usa `RegisterHotKey` e os códigos virtuais do Windows, portanto teclas especiais do teclado podem ter comportamento diferente conforme o firmware do dispositivo.
+
+## Próxima página e Página anterior: observação importante
+
+O agente PhoneBox disponibiliza `GET /api/config` para consultar a ordem das páginas habilitadas e `POST /api/goto/{page}` para solicitar uma navegação. A API pública analisada não informa qual página está visível no telefone naquele momento.
+
+Por isso, o complemento mantém um **cursor local** para as ações Próxima/Anterior:
+
+1. O cursor começa na posição escolhida em **Posição inicial / sincronizar navegação relativa** (padrão: página 1).
+2. Um atalho direto para Página N atualiza e salva o cursor em N quando o PhoneBox aceita a solicitação.
+3. Próxima/Anterior avança ou retrocede uma posição na lista de páginas habilitadas, salva a nova posição e dá a volta nas extremidades.
+4. O último cursor aceito é preservado entre reinicializações do complemento. Se a página for alterada manualmente no telefone, por gesto, por uma regra do PhoneBox ou por outro controlador, ajuste a posição atual no painel antes de continuar usando Próxima/Anterior.
+
+O complemento detecta dinamicamente a quantidade e a ordem das páginas habilitadas. Assim, Próxima/Anterior também funciona em painéis com mais de dez páginas, embora existam apenas dez atalhos diretos. A navegação envia o ID estável da página para o webhook `/api/goto`, em vez de depender de um índice numérico.
+
+**Perfis por telefone:** nesta versão, a descoberta usa a lista global de páginas retornada por `/api/config` sem o cabeçalho `X-PhoneBox-Device`. Se você configurou listas de páginas diferentes em PhoneBox → Settings → Phones para cada aparelho, confira se a lista global corresponde ao painel conectado; a seleção automática de perfil por telefone ainda não faz parte desta versão.
+
+## Requisitos
+
+- Windows 10 ou Windows 11, x64.
+- Agente PhoneBox em execução no computador. Endereço padrão: `http://127.0.0.1:8765`.
+- Para compilar a partir do código-fonte: .NET 10 SDK.
+
+## Instalar uma versão publicada
+
+1. Baixe `PhoneBoxKeyboardAddon-win-x64.zip` na página **Releases** do GitHub.
+2. Extraia o pacote.
+3. Abra PowerShell na pasta extraída e execute:
+
+   ```powershell
+   .\install.ps1 -LaunchSettings
+   ```
+
+4. Na interface local, teste a conexão com o PhoneBox, ajuste as combinações e clique em **Salvar**.
+5. Para iniciar automaticamente com o Windows, habilite **Iniciar com o Windows** no painel ou instale com `-StartWithWindows`.
+
+Se a política de execução do PowerShell bloquear o script, use apenas na sessão atual:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+.\install.ps1 -LaunchSettings
+```
+
+Essa política temporária termina quando a janela do PowerShell é fechada. O instalador não exige privilégios administrativos.
+
+## Compilar e empacotar
+
+No PowerShell, na raiz do repositório:
+
+```powershell
+.\scripts\publish-windows.ps1
+.\scripts\package.ps1
+```
+
+O script restaura dependências, compila, executa os testes internos (`--self-test`) e publica um executável `win-x64` autocontido em `artifacts\publish\PhoneBoxKeyboardAddon.exe`. O pacote distribuível é criado em `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`.
+
+Para validar manualmente:
+
+```powershell
+& .\artifacts\publish\PhoneBoxKeyboardAddon.exe --self-test
+& .\artifacts\publish\PhoneBoxKeyboardAddon.exe --settings
+```
+
+## Ícone opcional na bandeja do Windows
+
+Na seção **Preferências** do painel HTML, marque **Mostrar ícone na bandeja** e salve para exibir o ícone personalizado PhoneBox Keyboard perto do relógio, sem reiniciar o complemento. O mesmo desenho também é usado como ícone do executável. O menu permite abrir as configurações, ativar/desativar os atalhos globais e sair. A opção vem desativada por padrão. Se o ícone estiver oculto, abra o painel pelo atalho **Configurações** no Menu Iniciar.
+
+## Personalizar HTML e CSS
+
+Os arquivos de interface ficam em:
+
+- HTML: `src/PhoneBoxKeyboardAddon/Web/settings.html`
+- CSS: `src/PhoneBoxKeyboardAddon/Web/settings.css`
+
+O CSS foi separado do HTML para facilitar a edição do layout. Ambos são incorporados ao executável como recursos; depois de editar os arquivos, execute novamente `scripts\publish-windows.ps1` e atualize a instalação para aplicar as mudanças. Em execução, a folha de estilos é servida pelo endpoint local `http://127.0.0.1:<porta-do-painel>/settings.css`.
+
+## Interface de configurações e dados locais
+
+O processo de atalhos permanece oculto. A interface HTML é aberta somente quando o usuário escolhe **Configurações** no Menu Iniciar ou executa o aplicativo com `--settings`.
+
+| Dados | Localização |
+|---|---|
+| Configurações | `%APPDATA%\PhoneBoxKeyboardAddon\settings.json` |
+| Logs | `%LOCALAPPDATA%\PhoneBoxKeyboardAddon\Logs\addon.log` |
+| Aplicativo | `%LOCALAPPDATA%\Programs\PhoneBoxKeyboardAddon` |
+| Inicialização automática | Pasta Startup do usuário, quando habilitada |
+
+As configurações são armazenadas fora da pasta de instalação e migradas automaticamente entre versões. A preferência `ShowTrayIcon` foi adicionada no esquema v3; arquivos anteriores recebem `false` por padrão, preservando o comportamento oculto e todos os atalhos existentes.
+
+## Privacidade e segurança
+
+- O servidor da interface escuta somente em `127.0.0.1`, normalmente na porta `47831` (com fallback até `47851`); não é exposto à rede local.
+- O servidor valida os cabeçalhos `Host` e `Origin`, limita o tamanho das requisições e usa uma política CSP.
+- O destino do PhoneBox é restrito a HTTP em endereço loopback. O cliente não usa proxy, não segue redirecionamentos e chama apenas os endpoints fixos `/api/config`, `/api/push` e `/api/goto/{page}`.
+- O complemento não usa nuvem, telemetria, contas ou serviços remotos. Não solicita elevação de privilégios.
+- O servidor local não usa token de autenticação: as verificações de `Host` e `Origin` protegem o painel contra acesso web remoto/rebinding, mas não são uma barreira contra outros processos já executados na mesma conta do Windows. Não execute software local não confiável junto ao complemento.
+- Durante a captura de um atalho, os registros globais são suspensos temporariamente para que o navegador receba o teclado. Uma lease de 60 segundos restaura os atalhos se a página fechar inesperadamente.
+- As releases não são assinadas com Authenticode nesta versão; o SmartScreen pode exibir um aviso para executáveis baixados. Verifique o código-fonte, a release e o SHA-256 antes de executar.
+
+## Publicar no GitHub
+
+Crie um repositório vazio e execute na raiz extraída:
+
+```powershell
+git init
+git add .
+git commit -m "Initial release: PhoneBox Keyboard Add-on 1.4.0"
+git branch -M main
+git remote add origin https://github.com/SEU-USUARIO/PhoneBox-Keyboard-Addon.git
+git push -u origin main
+```
+
+O workflow **CI** restaura, compila e executa os testes em Windows. Para criar uma release, publique uma tag:
+
+```powershell
+git tag v1.4.0
+git push origin v1.4.0
+```
+
+O workflow **Release** compila o executável Windows x64, cria o ZIP distribuível, gera SHA-256 e publica os arquivos na página **Releases**.
+
+## Ícone do aplicativo e desinstalação
+
+O aplicativo e o ícone opcional da bandeja usam o recurso visual `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico` (também configurado como ícone do executável). O painel permite desinstalar o complemento sem executar scripts PowerShell: ele agenda um helper oculto que aguarda o processo encerrar e remove o executável instalado, os atalhos do Menu Iniciar e o atalho da pasta Startup. Por padrão, configurações e logs são preservados. Para apagá-los, o usuário precisa marcar explicitamente **Excluir também configurações e logs** e confirmar a ação.
+
+O cartão **Atalhos registrados** recebe totais calculados pelo agente (`registeredCount`, `enabledRegistrationCount`, `actionCount`) e não depende da contagem no JavaScript. Isso evita que o painel mostre `0 de 0` por diferenças de serialização de nomes de propriedades.
+
+## Limitações conhecidas
+
+- Windows 10/11 x64 é a única plataforma suportada.
+- O PhoneBox precisa estar em execução e acessível no endereço configurado.
+- Próxima/Anterior usa o cursor local descrito acima; a API PhoneBox analisada não informa a página atualmente visível no telefone.
+- Se outra aplicação já possuir uma combinação global, o Windows pode recusar o registro. Escolha outra combinação no painel.
+- O executável ainda não possui assinatura Authenticode.
+- A captura global, USB, integração Startup e publicação autocontida precisam ser validadas em um Windows real. O ambiente de desenvolvimento não deve ser tratado como prova de funcionamento no computador do usuário.
+
+## Desenvolvimento
+
+Consulte `docs/ARCHITECTURE.md`, `docs/TEST-PLAN.md`, `CONTRIBUTING.md` e `SECURITY.md`. Para relatar falhas, informe a versão do complemento, a versão do PhoneBox, o Windows, as combinações usadas e o trecho relevante do log (remova dados privados).
+
+## Licença e afiliação
+
+Licença MIT. Este é um complemento independente da comunidade; não é um componente oficial nem é afiliado aos mantenedores do PhoneBox.
+
+## Ícone do painel HTML
+
+O painel local utiliza o ícone do complemento também como favicon do navegador. O servidor local disponibiliza os recursos incorporados nas rotas `/favicon.ico` e `/phonebox-keyboard.png`; a mesma imagem PNG é usada na marca ao lado do título. Para trocar o desenho, substitua `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico` e `phonebox-keyboard.png`, mantendo os nomes dos arquivos, e publique novamente o executável.

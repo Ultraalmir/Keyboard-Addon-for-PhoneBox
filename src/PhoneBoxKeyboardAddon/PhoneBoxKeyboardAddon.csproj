@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>PhoneBoxKeyboardAddon</AssemblyName>
+    <RootNamespace>PhoneBoxKeyboardAddon</RootNamespace>
+    <Product>PhoneBox Keyboard Add-on</Product>
+    <Company>Community Add-on</Company>
+    <Description>Independent global keyboard shortcuts for PhoneBox.</Description>
+    <Version>1.4.0</Version>
+    <InformationalVersion>1.4.0</InformationalVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Web\phonebox-keyboard.ico</ApplicationIcon>
+    <DebugType>embedded</DebugType>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Web\settings.html" LogicalName="PhoneBoxKeyboardAddon.Web.settings.html" />
+    <EmbeddedResource Include="Web\settings.css" LogicalName="PhoneBoxKeyboardAddon.Web.settings.css" />
+    <EmbeddedResource Include="Web\phonebox-keyboard.ico" LogicalName="PhoneBoxKeyboardAddon.Web.phonebox-keyboard.ico" />
+    <EmbeddedResource Include="Web\phonebox-keyboard.png" LogicalName="PhoneBoxKeyboardAddon.Web.phonebox-keyboard.png" />
+  </ItemGroup>
+</Project>

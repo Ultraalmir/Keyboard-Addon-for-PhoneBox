@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0d12">
+  <meta name="description" content="Local settings panel for PhoneBox Keyboard Add-on.">
+  <title>PhoneBox Keyboard Add-on</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=1.4.0" sizes="16x16 24x24 32x32 48x48 64x64 128x128 256x256">
+  <link rel="icon" type="image/png" href="/phonebox-keyboard.png?v=1.4.0">
+  <link rel="apple-touch-icon" href="/phonebox-keyboard.png?v=1.4.0">
+  <link rel="stylesheet" href="/settings.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div class="brand">
+        <div class="logo"><img src="/phonebox-keyboard.png?v=1.4.0" alt="" aria-hidden="true" width="48" height="48"></div>
+        <div><h1>PhoneBox Keyboard Add-on</h1><div class="version" id="version">Versão 1.4.0</div></div>
+      </div>
+      <div class="top-actions">
+        <div class="language-picker" role="group" aria-label="Language" data-i18n-aria="languagePickerLabel">
+          <button type="button" class="language-button active" id="langPt" data-language="pt-BR" aria-pressed="true">PT-BR</button>
+          <button type="button" class="language-button" id="langEn" data-language="en" aria-pressed="false">EN</button>
+        </div>
+        <div class="running" data-i18n="running">● EXECUTANDO EM SEGUNDO PLANO</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div><h2 data-i18n="heroTitle">Navegue pelo PhoneBox com o Teclado</h2><p data-i18n="heroDescription">Configure até dez atalhos diretos, além de Próxima página e Página anterior.</p></div>
+      <div class="switch-wrap"><span class="switch-label" id="masterLabel">Atalhos ativados</span><label class="switch" title="Ativar ou desativar todos os atalhos" data-i18n-title="toggleAllTitle"><input id="masterEnabled" type="checkbox" checked><span class="track"></span></label></div>
+    </section>
+
+    <div class="grid">
+      <div>
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="directTitle">Atalhos diretos para páginas</h3><p data-i18n="directDescription">Configure até dez combinações. Os slots 8, 9 e 10 começam desativados.</p></div><span class="count" data-i18n="tenSlots">10 posições</span></div>
+          <div class="bindings" id="bindings"></div>
+          <div class="btnbar"><button class="btn secondary" id="resetDefaults" data-i18n="resetDefaults">Restaurar padrão</button><button class="btn primary" id="saveTop" data-i18n="saveApply">Salvar e aplicar alterações</button></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="relativeTitle">Navegação relativa</h3><p data-i18n="relativeDescription">Atalhos adicionais para avançar ou voltar entre todas as páginas habilitadas no PhoneBox, inclusive além da décima.</p></div><span class="count" data-i18n="twoActions">2 ações</span></div>
+          <div class="bindings" id="navigationBindings"></div>
+          <div class="notice"><strong data-i18n="relativeNoticeTitle">Como Próxima/Anterior funciona:</strong> <span data-i18n="relativeNotice">A API pública do PhoneBox permite abrir páginas por número ou identificador, mas não informa ao agente qual página está visível no celular. Por isso, o add-on mantém uma posição própria: atalhos diretos atualizam essa posição; depois de mudar de página pelo toque, gesto ou regra do PhoneBox, ajuste abaixo a posição que deve ser considerada atual.</span></div>
+          <div class="field section-gap"><label for="navigationStartPage" data-i18n="navigationStartLabel">Posição inicial / sincronizar navegação relativa</label><select id="navigationStartPage"></select><div class="hint" id="pageCountHint">Aguardando lista de páginas do PhoneBox… Salve para aplicar a posição escolhida.</div></div>
+          <div class="btnbar"><button class="btn secondary" id="refreshPages" data-i18n="refreshPages">Atualizar páginas do PhoneBox</button><button class="btn primary" id="saveNavigation" data-i18n="saveNavigation">Salvar e aplicar navegação</button></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="connectionTitle">Conexão com o PhoneBox</h3><p data-i18n="connectionDescription">O complemento utiliza somente a API local do agente PhoneBox.</p></div></div>
+          <div class="field"><label for="phoneBoxUrl" data-i18n="phoneBoxUrlLabel">Endereço local do agente</label><input id="phoneBoxUrl" type="text" spellcheck="false" placeholder="http://127.0.0.1:8765"><div class="hint" data-i18n="phoneBoxUrlHint">Padrão do PhoneBox: http://127.0.0.1:8765</div></div>
+          <div class="statusline"><span class="dot" id="connectionDot"></span><span id="connectionText" data-i18n="connectionNotChecked">Conexão ainda não verificada.</span></div>
+          <div class="btnbar"><button class="btn secondary" id="checkConnection" data-i18n="testConnection">Testar conexão</button></div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="preferencesTitle">Preferências</h3><p data-i18n="preferencesDescription">Comportamento do complemento no Windows.</p></div></div>
+          <div class="checkrow"><div><div class="checktitle" data-i18n="startupTitle">Iniciar com o Windows</div><div class="checkdesc" data-i18n="startupDescription">Executa silenciosamente ao entrar na sua conta.</div></div><input id="startWithWindows" type="checkbox"></div>
+          <div class="checkrow"><div><div class="checktitle" data-i18n="trayTitle">Mostrar ícone na bandeja</div><div class="checkdesc" data-i18n="trayDescription">Exibe um ícone perto do relógio, com menu para abrir configurações, ativar/desativar atalhos e sair. Desativado por padrão.</div></div><input id="showTrayIcon" type="checkbox"></div>
+          <div class="checkrow"><div><div class="checktitle" data-i18n="backgroundTitle">Executar sem janelas</div><div class="checkdesc" data-i18n="backgroundDescription">Não exibe console nem janela principal. O ícone da bandeja é opcional.</div></div><span class="muted" data-i18n="always">Sempre</span></div>
+          <div class="btnbar"><button class="btn primary" id="saveSettings" data-i18n="savePreferences">Salvar preferências</button></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="statusTitle">Estado do complemento</h3><p data-i18n="statusDescription">Informações da execução atual.</p></div></div>
+          <div class="statusline"><span class="dot ok" id="processDot"></span><span id="processText" data-i18n="processRunning">Complemento em execução.</span></div>
+          <div class="statusbox"><strong style="font-size:12px" data-i18n="lastActivityTitle">Última atividade</strong><p id="lastActivity" data-i18n="waitingFirstShortcut">Aguardando primeiro atalho.</p></div>
+          <div class="statusbox"><strong style="font-size:12px" data-i18n="registeredTitle">Atalhos registrados</strong><p id="registeredCount" data-i18n="checking">Verificando...</p></div>
+          <div class="statusbox"><strong style="font-size:12px" data-i18n="navigationCursorTitle">Posição usada por Próxima/Anterior</strong><p id="navigationCursor" data-i18n="checking">Verificando...</p></div>
+          <div class="btnbar"><button class="btn secondary" id="refreshStatus" data-i18n="refreshStatus">Atualizar estado</button><button class="btn danger" id="exitAddon" data-i18n="exitAddon">Encerrar complemento</button></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="uninstallTitle">Desinstalar complemento</h3><p data-i18n="uninstallDescription">Remove o aplicativo e seus atalhos do Windows. O PhoneBox original não será alterado.</p></div></div>
+          <div class="checkrow"><div><div class="checktitle" data-i18n="removeDataTitle">Excluir também configurações e logs</div><div class="checkdesc" data-i18n="removeDataDescription">Apaga os atalhos personalizados, endereço do PhoneBox e registros locais. Esta ação não pode ser desfeita.</div></div><input id="removeUserData" type="checkbox"></div>
+          <div class="btnbar"><button class="btn danger" id="uninstallAddon" data-i18n="uninstallButton">Desinstalar Keyboard Add-on</button></div>
+          <div class="hint" id="uninstallHint" data-i18n="preserveDataHint">As configurações serão preservadas por padrão.</div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head"><div><h3 data-i18n="howToTitle">Como configurar</h3><p data-i18n="howToDescription">Captura global sem editar arquivos.</p></div></div>
+          <ol class="guide-list"><li data-i18n="guide1">Clique em Capturar na ação desejada.</li><li data-i18n="guide2">Pressione ao menos um modificador (Ctrl, Alt, Shift ou Win) e a tecla principal.</li><li data-i18n="guide3">Ative ou desative cada ação como preferir.</li><li data-i18n="guide4">Clique em Salvar para registrar os atalhos no Windows.</li></ol>
+        </section>
+      </aside>
+    </div>
+    <footer class="foot"><span data-i18n="footerProject">Keyboard Add-on · Projeto comunitário independente</span><span data-i18n="footerStorage">Configurações armazenadas localmente neste computador</span></footer>
+  </main>
+
+  <div class="modal" id="captureModal" role="dialog" aria-modal="true" aria-labelledby="captureTitle">
+    <div class="modal-card"><h3 id="captureTitle" data-i18n="captureTitle">Capturar combinação</h3><p data-i18n="capturePrompt">Pressione uma tecla modificadora e uma tecla principal.</p><div class="listen-key" id="listenPreview" data-i18n="waitingKeyboard">Aguardando teclado…</div><p id="captureHint" data-i18n="captureExample">Exemplo: Ctrl + Shift + Numpad 1</p><div class="modal-actions"><button class="btn secondary" id="cancelCapture" data-i18n="cancel">Cancelar</button></div></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    let settings = null;
+    let captureTarget = null;
+    let captureTimer = null;
+    let phonePages = [];
+    let masterSwitchDirty = false;
+    let uiLanguage = 'pt-BR';
+    const MODS = ['Ctrl','Alt','Shift','Win'];
+    const I18N = {
+      'pt-BR': {
+        metaDescription:'Painel local de configurações do PhoneBox Keyboard Add-on.', languagePickerLabel:'Idioma da interface', eyebrow:'Complemento independente', running:'● EXECUTANDO EM SEGUNDO PLANO', heroTitle:'Navegue pelo PhoneBox com o teclado', heroDescription:'Configure até dez atalhos diretos, além de Próxima página e Página anterior. O complemento fica invisível e funciona globalmente no Windows.',
+        toggleAllTitle:'Ativar ou desativar todos os atalhos', shortcutsEnabled:'Atalhos ativados', shortcutsDisabled:'Atalhos desativados', directTitle:'Atalhos diretos para páginas', directDescription:'Configure até dez combinações. Os slots 8, 9 e 10 começam desativados.', tenSlots:'10 posições', resetDefaults:'Restaurar padrão', saveApply:'Salvar e aplicar alterações', relativeTitle:'Navegação relativa', relativeDescription:'Atalhos adicionais para avançar ou voltar entre todas as páginas habilitadas no PhoneBox, inclusive além da décima.', twoActions:'2 ações', relativeNoticeTitle:'Como Próxima/Anterior funciona:', relativeNotice:'A API pública do PhoneBox permite abrir páginas por número ou identificador, mas não informa ao agente qual página está visível no celular. Por isso, o add-on mantém uma posição própria: atalhos diretos atualizam essa posição; depois de mudar de página pelo toque, gesto ou regra do PhoneBox, ajuste abaixo a posição que deve ser considerada atual.', navigationStartLabel:'Posição inicial / sincronizar navegação relativa', pageCountHint:'Aguardando lista de páginas do PhoneBox… Salve para aplicar a posição escolhida.', refreshPages:'Atualizar páginas do PhoneBox', saveNavigation:'Salvar e aplicar navegação', connectionTitle:'Conexão com o PhoneBox', connectionDescription:'O complemento utiliza somente a API local do agente PhoneBox.', phoneBoxUrlLabel:'Endereço local do agente', phoneBoxUrlHint:'Padrão do PhoneBox: http://127.0.0.1:8765', connectionNotChecked:'Conexão ainda não verificada.', testConnection:'Testar conexão',
+        preferencesTitle:'Preferências', preferencesDescription:'Comportamento do complemento no Windows.', startupTitle:'Iniciar com o Windows', startupDescription:'Executa silenciosamente ao entrar na sua conta.', trayTitle:'Mostrar ícone na bandeja', trayDescription:'Exibe um ícone perto do relógio, com menu para abrir configurações, ativar/desativar atalhos e sair. Desativado por padrão.', backgroundTitle:'Executar sem janelas', backgroundDescription:'Não exibe console nem janela principal. O ícone da bandeja é opcional.', always:'Sempre', savePreferences:'Salvar preferências', statusTitle:'Estado do complemento', statusDescription:'Informações da execução atual.', processRunning:'Complemento em execução.', lastActivityTitle:'Última atividade', waitingFirstShortcut:'Aguardando primeiro atalho.', registeredTitle:'Atalhos registrados', checking:'Verificando...', navigationCursorTitle:'Posição usada por Próxima/Anterior', refreshStatus:'Atualizar estado', exitAddon:'Encerrar complemento', uninstallTitle:'Desinstalar complemento', uninstallDescription:'Remove o aplicativo e seus atalhos do Windows. O PhoneBox original não será alterado.', removeDataTitle:'Excluir também configurações e logs', removeDataDescription:'Apaga os atalhos personalizados, endereço do PhoneBox e registros locais. Esta ação não pode ser desfeita.', uninstallButton:'Desinstalar PhoneBox Keyboard Add-on', preserveDataHint:'As configurações serão preservadas por padrão.', howToTitle:'Como configurar', howToDescription:'Captura global sem editar arquivos.', guide1:'Clique em Capturar na ação desejada.', guide2:'Pressione ao menos um modificador (Ctrl, Alt, Shift ou Win) e a tecla principal.', guide3:'Ative ou desative cada ação como preferir.', guide4:'Clique em Salvar para registrar os atalhos no Windows.', footerProject:'PhoneBox Keyboard Add-on · Projeto comunitário independente', footerStorage:'Configurações armazenadas localmente neste computador.',
+        captureTitle:'Capturar combinação', capturePrompt:'Pressione uma tecla modificadora e uma tecla principal.', waitingKeyboard:'Aguardando teclado…', captureExample:'Exemplo: Ctrl + Shift + Numpad 1', cancel:'Cancelar', captureTitleFor:'Capturar atalho — {label}', captureHint:'Pressione uma combinação com Ctrl, Alt, Shift ou Win. NumLock deve estar ligado para teclas numéricas do Numpad. A captura expira automaticamente em 50 segundos.', captureTimeout:'Tempo de captura encerrado. Os atalhos foram reativados.', captureStartFailed:'Não foi possível iniciar a captura.', captureRestoreFailed:'Não foi possível confirmar a reativação dos atalhos.', unsupportedKey:'Tecla não suportada', unsupportedKeyHint:'Tente uma letra, número, Numpad, F1–F24 ou tecla de navegação.', includeModifier:'Inclua pelo menos Ctrl, Alt, Shift ou Win.', shortcutCaptured:'Atalho de {label}: {combo}. Clique em Salvar para aplicar.',
+        pageTitle:'Página {page}', destinationSubtitle:'Destino {page} · {title}', openPositionSubtitle:'Abrir posição {page} na ordem do PhoneBox', nextPage:'Próxima página', nextSubtitle:'Avança uma posição e retorna à primeira ao chegar ao fim.', previousPage:'Página anterior', previousSubtitle:'Volta uma posição e retorna à última ao chegar ao início.', pageOption:'{page} — Página {page}', pageCountDetected:'{count} página(s) habilitada(s) detectada(s). A posição escolhida será usada como referência para Próxima/Anterior.', pageListFailed:'Não foi possível listar as páginas. O add-on ainda pode navegar, mas a conexão deve ser testada.',
+        saveSuccess:'Configurações salvas e aplicadas.', savePartial:'Configurações salvas. {count} atalho(s) não puderam ser registrados. Confira conflitos com outros programas.', captureActive:'Captura ativa · atalhos temporariamente suspensos.', pageListLoaded:'{count} página(s) do PhoneBox carregadas.', pageListFailedToast:'Não foi possível carregar a lista de páginas do PhoneBox.', connectionChecking:'Verificando agente PhoneBox…', connectionSuccess:'Conexão com o PhoneBox confirmada.', connectionFailed:'Não foi possível conectar ao PhoneBox. Verifique se o agente está em execução.', runningWithTray:'Complemento em execução com ícone na bandeja.', runningNoTray:'Complemento em execução, sem ícone na bandeja.', registeredCount:'{registered} de {enabled} atalhos habilitados registrados ({total} ações configuráveis).', uninstallHintAvailable:'A desinstalação remove o aplicativo, os atalhos do Menu Iniciar e o atalho de inicialização. As configurações e logs são preservados, salvo se você marcar a opção acima.', uninstallHintUnavailable:'Para desinstalar pelo painel, abra as configurações pela instalação do Menu Iniciar.', navigationCursor:'O add-on considera a página {page} como posição atual. Ajuste-a depois de navegar manualmente no celular.', lastNavigationSuccess:'Navegação enviada ao PhoneBox.', lastNavigationFailure:'A última ação de navegação falhou.', cannotReadStatus:'Não foi possível consultar o complemento.', exitConfirm:'Encerrar o complemento? Os atalhos deixarão de funcionar até ele ser iniciado novamente.', exitSuccess:'Solicitação de encerramento enviada.', uninstallConfirmDelete:'Desinstalar o complemento e EXCLUIR também todas as configurações e logs? Esta ação não pode ser desfeita.', uninstallConfirmKeep:'Desinstalar o complemento? Suas configurações e logs serão preservados para uma possível reinstalação.', uninstallInProgress:'Desinstalação em andamento. Esta página será encerrada.', startupWarning:'Configurações salvas, mas não foi possível atualizar a inicialização do Windows.', actionFailed:'Não foi possível concluir a ação.', saveFailed:'Não foi possível salvar as configurações.', uninstallFailed:'Não foi possível desinstalar o complemento.', initFailed:'Não foi possível carregar as configurações do complemento.', restoreDefaultsConfirm:'Restaurar os padrões: Ctrl + Numpad 1–7 ativos, slots 8–10 desativados, Ctrl + Numpad + para próxima e Ctrl + Numpad - para anterior?', defaultsRestored:'Padrões restaurados. Clique em Salvar para aplicar.', languageSaved:'Preferência de idioma salva.', languageSaveFailed:'Não foi possível salvar o idioma. O idioma anterior foi restaurado.', languageEnglish:'English', languagePortuguese:'Português', versionLabel:'Versão {version}', pageLabelShort:'Page', spaceKey:'Space', escapeKey:'Esc', connectionFailedStatus:'Conexão não disponível.'
+      },
+      'en': {
+        metaDescription:'Local settings panel for PhoneBox Keyboard Add-on.', languagePickerLabel:'Interface language', eyebrow:'Independent add-on', running:'● RUNNING IN BACKGROUND', heroTitle:'Navigate PhoneBox with your keyboard', heroDescription:'Configure up to ten direct shortcuts, plus Next Page and Previous Page. The add-on stays invisible and works globally in Windows.',
+        toggleAllTitle:'Enable or disable all shortcuts', shortcutsEnabled:'Shortcuts enabled', shortcutsDisabled:'Shortcuts disabled', directTitle:'Direct page shortcuts', directDescription:'Configure up to ten combinations. Slots 8, 9, and 10 are disabled by default.', tenSlots:'10 slots', resetDefaults:'Restore defaults', saveApply:'Save and apply changes', relativeTitle:'Relative navigation', relativeDescription:'Additional shortcuts to move forward or backward through all enabled PhoneBox pages, including pages beyond the tenth.', twoActions:'2 actions', relativeNoticeTitle:'How Next/Previous works:', relativeNotice:'The public PhoneBox API can open pages by number or ID, but it does not tell the agent which page is currently visible on the phone. The add-on therefore keeps its own position: direct shortcuts update it; after changing pages by touch, gesture, or a PhoneBox rule, adjust the position below to match the page currently shown.', navigationStartLabel:'Starting position / sync relative navigation', pageCountHint:'Waiting for the PhoneBox page list… Save to apply the selected position.', refreshPages:'Refresh PhoneBox pages', saveNavigation:'Save and apply navigation', connectionTitle:'PhoneBox connection', connectionDescription:'The add-on uses only the local PhoneBox agent API.', phoneBoxUrlLabel:'Local agent address', phoneBoxUrlHint:'PhoneBox default: http://127.0.0.1:8765', connectionNotChecked:'Connection has not been checked yet.', testConnection:'Test connection',
+        preferencesTitle:'Preferences', preferencesDescription:'Add-on behavior in Windows.', startupTitle:'Start with Windows', startupDescription:'Runs silently when you sign in to your account.', trayTitle:'Show notification area icon', trayDescription:'Shows an icon near the clock, with a menu to open settings, enable/disable shortcuts, and exit. Off by default.', backgroundTitle:'Run without windows', backgroundDescription:'No console or main window is shown. The notification area icon is optional.', always:'Always', savePreferences:'Save preferences', statusTitle:'Add-on status', statusDescription:'Current runtime information.', processRunning:'Add-on is running.', lastActivityTitle:'Last activity', waitingFirstShortcut:'Waiting for the first shortcut.', registeredTitle:'Registered shortcuts', checking:'Checking...', navigationCursorTitle:'Position used by Next/Previous', refreshStatus:'Refresh status', exitAddon:'Exit add-on', uninstallTitle:'Uninstall add-on', uninstallDescription:'Removes the app and its Windows shortcuts. The original PhoneBox installation will not be changed.', removeDataTitle:'Also delete settings and logs', removeDataDescription:'Deletes custom shortcuts, the PhoneBox address, and local logs. This action cannot be undone.', uninstallButton:'Uninstall PhoneBox Keyboard Add-on', preserveDataHint:'Settings are preserved by default.', howToTitle:'How to configure', howToDescription:'Capture global shortcuts without editing files.', guide1:'Click Capture for the action you want to configure.', guide2:'Press at least one modifier (Ctrl, Alt, Shift, or Win) and a main key.', guide3:'Enable or disable each action as needed.', guide4:'Click Save to register the shortcuts in Windows.', footerProject:'PhoneBox Keyboard Add-on · Independent community project', footerStorage:'Settings are stored locally on this computer.',
+        captureTitle:'Capture shortcut', capturePrompt:'Press a modifier key and a main key.', waitingKeyboard:'Waiting for keyboard input…', captureExample:'Example: Ctrl + Shift + Numpad 1', cancel:'Cancel', captureTitleFor:'Capture shortcut — {label}', captureHint:'Press a combination with Ctrl, Alt, Shift, or Win. NumLock must be on for Numpad digits. Capture automatically expires after 50 seconds.', captureTimeout:'Capture timed out. Shortcuts have been re-enabled.', captureStartFailed:'Could not start shortcut capture.', captureRestoreFailed:'Could not confirm shortcut reactivation.', unsupportedKey:'Unsupported key', unsupportedKeyHint:'Try a letter, number, Numpad key, F1–F24, or navigation key.', includeModifier:'Include at least Ctrl, Alt, Shift, or Win.', shortcutCaptured:'Shortcut for {label}: {combo}. Click Save to apply.',
+        pageTitle:'Page {page}', destinationSubtitle:'Target {page} · {title}', openPositionSubtitle:'Open position {page} in PhoneBox page order', nextPage:'Next page', nextSubtitle:'Moves forward one position and wraps to the first page at the end.', previousPage:'Previous page', previousSubtitle:'Moves back one position and wraps to the last page at the beginning.', pageOption:'{page} — Page {page}', pageCountDetected:'{count} enabled PhoneBox page(s) detected. The selected position will be used as the Next/Previous reference.', pageListFailed:'Could not list pages. The add-on may still navigate, but the connection should be checked.',
+        saveSuccess:'Settings saved and applied.', savePartial:'Settings saved. {count} shortcut(s) could not be registered. Check for conflicts with other apps.', captureActive:'Capture active · shortcuts are temporarily suspended.', pageListLoaded:'Loaded {count} PhoneBox page(s).', pageListFailedToast:'Could not load the PhoneBox page list.', connectionChecking:'Checking the PhoneBox agent…', connectionSuccess:'PhoneBox connection confirmed.', connectionFailed:'Could not connect to PhoneBox. Check whether the agent is running.', runningWithTray:'Add-on is running with a notification area icon.', runningNoTray:'Add-on is running without a notification area icon.', registeredCount:'{registered} of {enabled} enabled shortcuts registered ({total} configurable actions).', uninstallHintAvailable:'Uninstall removes the app, Start Menu shortcuts, and startup shortcut. Settings and logs are preserved unless you select the option above.', uninstallHintUnavailable:'To uninstall from the panel, open settings from the installed Start Menu shortcut.', navigationCursor:'The add-on considers page {page} the current position. Adjust it after navigating manually on the phone.', lastNavigationSuccess:'Navigation request sent to PhoneBox.', lastNavigationFailure:'The last navigation action failed.', cannotReadStatus:'Could not retrieve add-on status.', exitConfirm:'Exit the add-on? Shortcuts will stop working until it is started again.', exitSuccess:'Exit request sent.', uninstallConfirmDelete:'Uninstall the add-on and ALSO DELETE all settings and logs? This action cannot be undone.', uninstallConfirmKeep:'Uninstall the add-on? Your settings and logs will be preserved for a possible reinstall.', uninstallInProgress:'Uninstallation in progress. This page will close.', startupWarning:'Settings were saved, but the Windows startup entry could not be updated.', actionFailed:'The requested action could not be completed.', saveFailed:'Could not save the settings.', uninstallFailed:'The add-on could not be uninstalled.', initFailed:'Could not load the add-on settings.', restoreDefaultsConfirm:'Restore defaults: Ctrl + Numpad 1–7 enabled, slots 8–10 disabled, Ctrl + Numpad + for Next, and Ctrl + Numpad - for Previous?', defaultsRestored:'Defaults restored. Click Save to apply them.', languageSaved:'Language preference saved.', languageSaveFailed:'Could not save the language preference. The previous language was restored.', languageEnglish:'English', languagePortuguese:'Português', versionLabel:'Version {version}', pageLabelShort:'Page', spaceKey:'Space', escapeKey:'Esc', connectionFailedStatus:'Connection unavailable.'
+      }
+    };
+    const t = (key, values={}) => {
+      let value = (I18N[uiLanguage] || I18N['pt-BR'])[key] ?? I18N['pt-BR'][key] ?? key;
+      return value.replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
+    };
+    const MOD_LABELS = {Ctrl:'Ctrl',Alt:'Alt',Shift:'Shift',Win:'Win'};
+    const KEY_LABELS = {Space:'spaceKey',Escape:'escapeKey',ArrowUp:'↑',ArrowDown:'↓',ArrowLeft:'←',ArrowRight:'→',PageUp:'Page Up',PageDown:'Page Down',NumAdd:'Numpad +',NumSubtract:'Numpad -',NumMultiply:'Numpad *',NumDivide:'Numpad /',NumDecimal:'Numpad .'};
+    const codeToKey = code => {
+      if (/^Key[A-Z]$/.test(code)) return code.slice(3);
+      if (/^Digit[0-9]$/.test(code)) return 'Top' + code.slice(5);
+      if (/^Numpad[0-9]$/.test(code)) return 'Num' + code.slice(6);
+      if (/^F([1-9]|1[0-9]|2[0-4])$/.test(code)) return code;
+      const map = {Space:'Space',Tab:'Tab',Enter:'Enter',Escape:'Escape',Backspace:'Backspace',Insert:'Insert',Delete:'Delete',Home:'Home',End:'End',PageUp:'PageUp',PageDown:'PageDown',ArrowLeft:'ArrowLeft',ArrowUp:'ArrowUp',ArrowRight:'ArrowRight',ArrowDown:'ArrowDown',NumpadAdd:'NumAdd',NumpadSubtract:'NumSubtract',NumpadMultiply:'NumMultiply',NumpadDivide:'NumDivide',NumpadDecimal:'NumDecimal',NumpadEnter:'Enter',Minus:'Minus',Equal:'Equal',BracketLeft:'BracketLeft',BracketRight:'BracketRight',Backslash:'Backslash',Semicolon:'Semicolon',Quote:'Quote',Backquote:'Backquote',Comma:'Comma',Period:'Period',Slash:'Slash'};
+      return map[code] || null;
+    };
+    const keyLabel = key => KEY_LABELS[key] ? t(KEY_LABELS[key]) : (key?.startsWith('Num') && key.length === 4 ? 'Numpad ' + key[3] : key?.startsWith('Top') ? key[3] : key);
+    const comboLabel = binding => [...MODS.filter(m => binding.modifiers?.includes(m)),keyLabel(binding.key)].filter(Boolean).join(' + ');
+    function applyLanguage(){
+      document.documentElement.lang = uiLanguage;
+      document.title = 'PhoneBox Keyboard Add-on';
+      const description = document.querySelector('meta[name="description"]'); if(description) description.content = t('metaDescription');
+      document.querySelectorAll('[data-i18n]').forEach(el => { const key=el.dataset.i18n; el.textContent=t(key); });
+      document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title=t(el.dataset.i18nTitle); });
+      document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label',t(el.dataset.i18nAria)); });
+      $('langPt').classList.toggle('active',uiLanguage==='pt-BR'); $('langPt').setAttribute('aria-pressed',String(uiLanguage==='pt-BR'));
+      $('langEn').classList.toggle('active',uiLanguage==='en'); $('langEn').setAttribute('aria-pressed',String(uiLanguage==='en'));
+    }
+    function toast(message,bad=false){const el=$('toast');el.textContent=message;el.style.borderColor=bad?'#8a4653':'#465777';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3600)}
+    async function api(path,options={}){const response=await fetch(path,{cache:'no-store',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});let data={};try{data=await response.json()}catch{}if(!response.ok)throw new Error(data.error||data.message||`HTTP ${response.status}`);return data}
+    function defaultSettings(){return {schemaVersion:3,uiLanguage:'pt-BR',shortcutsEnabled:true,startWithWindows:false,showTrayIcon:false,phoneBoxUrl:'http://127.0.0.1:8765',navigationStartPage:1,bindings:Array.from({length:10},(_,i)=>({page:i+1,enabled:i<7,modifiers:['Ctrl'],key:i===9?'Num0':'Num'+(i+1)})),nextPage:{enabled:true,modifiers:['Ctrl'],key:'NumAdd'},previousPage:{enabled:true,modifiers:['Ctrl'],key:'NumSubtract'}}}
+    function getTarget(id){if(id==='next')return settings.nextPage;if(id==='previous')return settings.previousPage;const match=/^page-(\d+)$/.exec(id||'');return match?settings.bindings.find(b=>b.page===Number(match[1])):null}
+    function makeRow({id,label,subtitle,binding,badge}){
+      const row=document.createElement('div');row.className='binding'+(!binding.enabled?' disabled':'');
+      const page=document.createElement('div');page.className='page-number'+(badge?' nav':'');page.textContent=badge||label.replace(/^.*? (\d+)$/, '$1');
+      const title=document.createElement('div');const name=document.createElement('div');name.className='page-title';name.textContent=label;const sub=document.createElement('div');sub.className='page-sub';sub.textContent=subtitle;title.append(name,sub);
+      const keys=document.createElement('div');keys.className='keys';(binding.modifiers||[]).forEach(mod=>{const cap=document.createElement('span');cap.className='keycap';cap.textContent=MOD_LABELS[mod]||mod;keys.append(cap)});const key=document.createElement('span');key.className='keycap';key.textContent=keyLabel(binding.key);keys.append(key);
+      const capture=document.createElement('button');capture.className='capture';capture.textContent=uiLanguage==='en'?'Capture':'Capturar';capture.addEventListener('click',()=>startCapture(id,label));
+      const toggle=document.createElement('div');toggle.className='row-toggle';const labelEl=document.createElement('label');labelEl.className='switch mini-switch';const input=document.createElement('input');input.type='checkbox';input.checked=!!binding.enabled;input.setAttribute('aria-label',`${uiLanguage==='en'?'Enable':'Ativar'} ${label}`);input.addEventListener('change',()=>{binding.enabled=input.checked;row.classList.toggle('disabled',!input.checked)});const track=document.createElement('span');track.className='track';labelEl.append(input,track);toggle.append(labelEl);
+      row.append(page,title,keys,capture,toggle);return row;
+    }
+    function renderBindings(){
+      const host=$('bindings');host.replaceChildren();
+      settings.bindings.sort((a,b)=>a.page-b.page).forEach(binding=>{
+        const phonePage=phonePages[binding.page-1];
+        const subtitle=phonePage?t('destinationSubtitle',{page:binding.page,title:phonePage.title}):t('openPositionSubtitle',{page:binding.page});
+        host.append(makeRow({id:`page-${binding.page}`,label:t('pageTitle',{page:binding.page}),subtitle,binding}));
+      });
+      const nav=$('navigationBindings');nav.replaceChildren();
+      nav.append(makeRow({id:'next',label:t('nextPage'),subtitle:t('nextSubtitle'),binding:settings.nextPage,badge:'›'}));
+      nav.append(makeRow({id:'previous',label:t('previousPage'),subtitle:t('previousSubtitle'),binding:settings.previousPage,badge:'‹'}));
+      if(!masterSwitchDirty){$('masterEnabled').checked=!!settings.shortcutsEnabled;$('masterLabel').textContent=settings.shortcutsEnabled?t('shortcutsEnabled'):t('shortcutsDisabled');}
+      $('phoneBoxUrl').value=settings.phoneBoxUrl;$('startWithWindows').checked=!!settings.startWithWindows;$('showTrayIcon').checked=!!settings.showTrayIcon;
+      renderStartPageOptions();
+    }
+    function renderStartPageOptions(){
+      const select=$('navigationStartPage');select.replaceChildren();
+      const max=Math.max(10,phonePages.length||0,Number(settings.navigationStartPage)||1);
+      for(let i=1;i<=max;i++){
+        const opt=document.createElement('option');opt.value=String(i);
+        const title=phonePages[i-1]?.title;opt.textContent=title?`${i} — ${title}`:t('pageOption',{page:i});select.append(opt);
+      }
+      select.value=String(settings.navigationStartPage||1);
+      $('pageCountHint').textContent=phonePages.length?t('pageCountDetected',{count:phonePages.length}):t('pageListFailed');
+    }
+    function collectSettings(){return {...settings,uiLanguage,shortcutsEnabled:$('masterEnabled').checked,phoneBoxUrl:$('phoneBoxUrl').value.trim(),startWithWindows:$('startWithWindows').checked,showTrayIcon:$('showTrayIcon').checked,navigationStartPage:Number($('navigationStartPage').value)||1,bindings:settings.bindings.map(b=>({...b,modifiers:[...(b.modifiers||[])]})),nextPage:{...settings.nextPage,modifiers:[...(settings.nextPage.modifiers||[])]},previousPage:{...settings.previousPage,modifiers:[...(settings.previousPage.modifiers||[])]}}}
+    async function save(){
+      const payload=collectSettings();const result=await api('/api/config',{method:'POST',body:JSON.stringify(payload)});settings=payload;masterSwitchDirty=false;renderBindings();toast(result.warning?t('startupWarning'):t('saveSuccess'));await refreshStatus();
+      if(result.registrations){const failed=result.registrations.filter(x=>x.enabled&&!x.registered);if(failed.length)toast(t('savePartial',{count:failed.length}),true)}
+    }
+    async function switchLanguage(language){
+      if(!['pt-BR','en'].includes(language)||language===uiLanguage)return;
+      const previous=uiLanguage;
+      try{
+        const draft=collectSettings();uiLanguage=language;draft.uiLanguage=language;
+        await api('/api/config',{method:'POST',body:JSON.stringify(draft)});
+        settings=draft;masterSwitchDirty=false;applyLanguage();renderBindings();$('connectionText').textContent=t('connectionNotChecked');await refreshStatus();toast(t('languageSaved'));
+      }catch(error){uiLanguage=previous;applyLanguage();renderBindings();toast(t('languageSaveFailed'),true)}
+    }
+    $('langPt').addEventListener('click',()=>switchLanguage('pt-BR'));
+    $('langEn').addEventListener('click',()=>switchLanguage('en'));
+    async function startCapture(targetId,label){
+      try{
+        await api('/api/capture',{method:'POST',body:JSON.stringify({active:true})});
+        captureTarget=targetId;$('captureTitle').textContent=t('captureTitleFor',{label});$('listenPreview').textContent=t('waitingKeyboard');$('captureHint').textContent=t('captureHint');$('captureModal').classList.add('open');
+        clearTimeout(captureTimer);captureTimer=setTimeout(()=>{if(captureTarget!==null){void stopCapture();toast(t('captureTimeout'))}},50000);
+        await refreshStatus();
+      }catch(e){toast(t('captureStartFailed'),true)}
+    }
+    async function stopCapture(){
+      const wasCapturing=captureTarget!==null;captureTarget=null;clearTimeout(captureTimer);$('captureModal').classList.remove('open');
+      if(wasCapturing){try{await api('/api/capture',{method:'POST',body:JSON.stringify({active:false})});await refreshStatus()}catch(e){toast(t('captureRestoreFailed'),true)}}
+    }
+    document.addEventListener('keydown',event=>{
+      if(captureTarget===null)return;event.preventDefault();event.stopPropagation();
+      if(['ControlLeft','ControlRight','ShiftLeft','ShiftRight','AltLeft','AltRight','MetaLeft','MetaRight'].includes(event.code))return;
+      const key=codeToKey(event.code);if(!key){$('listenPreview').textContent=t('unsupportedKey');$('captureHint').textContent=t('unsupportedKeyHint');return}
+      const mods=[];if(event.ctrlKey)mods.push('Ctrl');if(event.altKey)mods.push('Alt');if(event.shiftKey)mods.push('Shift');if(event.metaKey)mods.push('Win');
+      if(!mods.length){$('listenPreview').textContent=keyLabel(key);$('captureHint').textContent=t('includeModifier');return}
+      const target=getTarget(captureTarget);if(!target)return;target.key=key;target.modifiers=mods;
+      const label=captureTarget==='next'?t('nextPage'):captureTarget==='previous'?t('previousPage'):t('pageTitle',{page:target.page});
+      renderBindings();void stopCapture();toast(t('shortcutCaptured',{label,combo:comboLabel(target)}));
+    },true);
+    $('cancelCapture').addEventListener('click',()=>void stopCapture());$('captureModal').addEventListener('click',e=>{if(e.target===$('captureModal'))void stopCapture()});
+    window.addEventListener('pagehide',()=>{if(captureTarget!==null){try{navigator.sendBeacon('/api/capture',new Blob([JSON.stringify({active:false})],{type:'application/json'}))}catch{}}});
+    $('masterEnabled').addEventListener('change',()=>{masterSwitchDirty=true;$('masterLabel').textContent=$('masterEnabled').checked?t('shortcutsEnabled'):t('shortcutsDisabled')});
+    $('resetDefaults').addEventListener('click',()=>{if(!confirm(t('restoreDefaultsConfirm')))return;const language=settings.uiLanguage||uiLanguage;settings=defaultSettings();settings.uiLanguage=language;masterSwitchDirty=false;renderBindings();toast(t('defaultsRestored'))});
+    $('saveTop').addEventListener('click',async()=>{try{await save()}catch(e){toast(t('saveFailed'),true)}});
+    $('saveNavigation').addEventListener('click',async()=>{try{await save()}catch(e){toast(t('saveFailed'),true)}});
+    $('saveSettings').addEventListener('click',async()=>{try{await save()}catch(e){toast(t('saveFailed'),true)}});
+    async function loadPages(){
+      try{const result=await api('/api/pages');phonePages=result.pages||[];renderBindings();toast(t('pageListLoaded',{count:phonePages.length}));return true}
+      catch(e){phonePages=[];renderStartPageOptions();$('pageCountHint').textContent=t('pageListFailed');toast(t('pageListFailedToast'),true);return false}
+    }
+    async function checkConnection(){const dot=$('connectionDot'),text=$('connectionText');dot.className='dot';text.textContent=t('connectionChecking');try{await api('/api/connection',{method:'POST',body:JSON.stringify({phoneBoxUrl:$('phoneBoxUrl').value.trim()})});dot.className='dot ok';text.textContent=t('connectionSuccess');await loadPages();toast(t('connectionSuccess'))}catch(e){dot.className='dot bad';text.textContent=t('connectionFailedStatus');toast(t('connectionFailed'),true)}}
+    $('checkConnection').addEventListener('click',checkConnection);$('refreshPages').addEventListener('click',loadPages);
+    async function refreshStatus(){
+      try{const s=await api('/api/status');$('version').textContent=t('versionLabel',{version:s.version});$('processDot').className='dot ok';$('processText').textContent=s.trayIconVisible?t('runningWithTray'):t('runningNoTray');if(!masterSwitchDirty){$('masterEnabled').checked=!!s.shortcutsEnabled;$('masterLabel').textContent=s.shortcutsEnabled?t('shortcutsEnabled'):t('shortcutsDisabled')}
+        const rows=s.registrations||[];const ready=Number.isInteger(s.registeredCount)?s.registeredCount:rows.filter(x=>x.registered===true).length;const enabled=Number.isInteger(s.enabledRegistrationCount)?s.enabledRegistrationCount:rows.filter(x=>x.enabled===true).length;const total=Number.isInteger(s.actionCount)?s.actionCount:rows.length;
+        $('registeredCount').textContent=s.capturing?t('captureActive'):t('registeredCount',{registered:ready,enabled,total});
+        const uninstall=$('uninstallAddon');if(uninstall)uninstall.disabled=!s.canUninstall;
+        const uninstallHint=$('uninstallHint');if(uninstallHint)uninstallHint.textContent=s.canUninstall?t('uninstallHintAvailable'):t('uninstallHintUnavailable');
+        $('navigationCursor').textContent=t('navigationCursor',{page:s.navigationCursorPage||1});
+        const last=s.lastAction||{};$('lastActivity').textContent=last.at?new Date(last.at).toLocaleString(uiLanguage==='en'?'en-US':'pt-BR')+' — '+(last.success===false?t('lastNavigationFailure'):t('lastNavigationSuccess')):t('waitingFirstShortcut');
+      }catch(e){$('processDot').className='dot bad';$('processText').textContent=t('cannotReadStatus')}
+    }
+    $('refreshStatus').addEventListener('click',refreshStatus);
+    $('exitAddon').addEventListener('click',async()=>{if(!confirm(t('exitConfirm')))return;try{await api('/api/shutdown',{method:'POST',body:'{}'});toast(t('exitSuccess'))}catch(e){toast(t('actionFailed'),true)}});
+    $('uninstallAddon').addEventListener('click',async()=>{
+      const removeUserData=$('removeUserData').checked;
+      const message=removeUserData?t('uninstallConfirmDelete'):t('uninstallConfirmKeep');
+      if(!confirm(message))return;
+      const button=$('uninstallAddon');button.disabled=true;
+      try{await api('/api/uninstall',{method:'POST',body:JSON.stringify({removeUserData})});toast(t('uninstallInProgress'));$('uninstallHint').textContent=t('uninstallInProgress');setTimeout(()=>window.close(),1400)}
+      catch(e){button.disabled=false;toast(t('uninstallFailed'),true)}
+    });
+    async function init(){try{settings=await api('/api/config');uiLanguage=settings.uiLanguage==='en'?'en':'pt-BR';applyLanguage();await loadPages();renderBindings();await refreshStatus();await checkConnection();setInterval(refreshStatus,4000)}catch(e){toast(t('initFailed'),true)}}
+    init();
+  </script>
+</body>
+</html>
