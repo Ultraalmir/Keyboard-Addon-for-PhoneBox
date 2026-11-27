@@ -56,7 +56,7 @@ The add-on is installed separately under `%LOCALAPPDATA%\Programs\PhoneBoxKeyboa
 
 ## Ícone personalizado e desinstalação (v1.3.0)
 
-`TrayIconController` é criado pelo `AddonApplicationContext`. A preferência `ShowTrayIcon` é persistida em `settings.json`; o padrão é `false`. A interface HTML envia a preferência pelo endpoint local `/api/config`. O servidor despacha a aplicação da preferência para a thread proprietária da janela WinForms, e só então alterna `NotifyIcon.Visible`. O menu da bandeja permite abrir o painel, ativar/desativar atalhos globais e encerrar o complemento. Quando a preferência está desligada, o processo permanece oculto e o painel continua acessível pelo atalho **Configurações** do Menu Iniciar.
+`TrayIconController` é criado pelo `AddonApplicationContext`. A preferência `ShowTrayIcon` é persistida em `settings.json`; o padrão é `false`. A interface HTML envia a preferência pelo endpoint local `/api/config`. O servidor despacha a aplicação da preferência para a thread proprietária da janela WinForms, e só então alterna `NotifyIcon.Visible`. O menu da bandeja permite abrir o painel, ativar/desativar atalhos globais e encerrar o complemento. Quando a preferência está desligada, o processo permanece oculto e o painel continua acessível pelo arquivo `Abrir-Configuracoes.bat` incluído no pacote de instalação.
 
 ## Assets do painel
 

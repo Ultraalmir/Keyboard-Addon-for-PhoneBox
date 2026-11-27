@@ -26,7 +26,7 @@ The built-in self-test verifies:
 ## Manual Windows acceptance checklist
 
 1. Install with `powershell -ExecutionPolicy Bypass -File .\\scripts\\install.ps1`.
-2. Open **Start Menu → PhoneBox Keyboard Add-on → Configurações**.
+2. Run `Abrir-Configuracoes.bat` from the extracted package folder.
 3. Confirm the PhoneBox connection test succeeds while PhoneBox 0.9.31 or later is running.
 4. With at least ten enabled pages, configure and test all direct slots 1–10. Confirm Numpad 0 can be used for page 10.
 5. Test Next/Previous on a panel with more than ten enabled pages.
@@ -41,7 +41,7 @@ The built-in self-test verifies:
 14. Configure a duplicate combination between a direct page and Next/Previous; confirm the settings API rejects it with a clear validation message.
 15. Reserve a conflicting hotkey in another application and confirm the UI reports that Windows could not register it.
 16. Enable startup, sign out/in or restart Windows, and confirm the add-on starts without a console, main window, or tray icon.
-17. Open Settings from the Start Menu while the background instance is running and confirm a second process is not created.
+17. Open Settings using `Abrir-Configuracoes.bat` while the background instance is running and confirm a second process is not created.
 18. Publish a test release, open the settings panel, confirm the update notice and version comparison, then run the update. Confirm the checksum is validated, only the installed executable is replaced, settings/logs/shortcuts remain intact, and the add-on restarts.
 19. Simulate a bad package/checksum and confirm installation is refused without changing the installed executable. Simulate a helper replacement/startup failure and confirm the previous executable is restored.
 20. Run `scripts\\uninstall.ps1`; confirm the app and shortcuts are removed while settings/logs remain unless `-RemoveSettings` is specified.
@@ -58,7 +58,7 @@ Global hotkey capture, Windows startup integration, USB-connected PhoneBox navig
 ## Testes adicionais da versão 1.2.0
 
 1. Com `ShowTrayIcon=false`, iniciar o complemento em segundo plano e confirmar que nenhum ícone do complemento aparece na área de notificação.
-2. Abrir **Configurações** pelo Menu Iniciar, habilitar **Mostrar ícone na bandeja** e salvar. Confirmar que o ícone aparece sem reiniciar o processo.
+2. Abrir **Configurações** pelo arquivo `Abrir-Configuracoes.bat`, habilitar **Mostrar ícone na bandeja** e salvar. Confirmar que o ícone aparece sem reiniciar o processo.
 3. Abrir o menu do ícone: confirmar **Abrir configurações**, alternância de atalhos globais e **Sair**.
 4. Desabilitar os atalhos pelo menu da bandeja; confirmar no painel e por hotkey que foram desregistrados. Habilitá-los novamente.
 5. Desabilitar o ícone pelo painel e salvar; confirmar que desaparece imediatamente, mas o processo e as hotkeys continuam funcionando.
@@ -83,8 +83,8 @@ Global hotkey capture, Windows startup integration, USB-connected PhoneBox navig
 1. Confirmar que `/api/status` fornece `registeredCount`, `enabledRegistrationCount` e `actionCount`. Com os padrões, a interface deve mostrar 9 ações habilitadas de 12 ações configuráveis; o total efetivamente registrado depende de conflitos de hotkey no Windows.
 2. Desabilitar globalmente os atalhos e confirmar que o contador de registrados passa a zero, enquanto os totais de ações habilitadas/configuráveis continuam corretos.
 3. Habilitar o ícone da bandeja e verificar o ícone personalizado em 16/32 px, menu de contexto e duplo clique; desabilitar e confirmar que ele desaparece.
-4. Abrir o painel pela instalação no Menu Iniciar. Confirmar que a opção de desinstalar fica habilitada.
-5. Desinstalar sem marcar a remoção de dados: confirmar que o executável, atalhos do Menu Iniciar e Startup são removidos, enquanto `settings.json` e logs permanecem.
+4. Abrir o painel pela instalação padrão usando `Abrir-Configuracoes.bat`. Confirmar que a opção de desinstalar fica habilitada.
+5. Desinstalar sem marcar a remoção de dados: confirmar que o executável, atalhos antigos do Menu Iniciar e Startup são removidos, enquanto `settings.json` e logs permanecem.
 6. Reinstalar, marcar a remoção de dados, confirmar duas vezes e verificar que configurações/logs também são removidos.
 7. Executar uma cópia de desenvolvimento/publicação fora da pasta instalada e confirmar que o painel não oferece desinstalação dessa cópia.
 

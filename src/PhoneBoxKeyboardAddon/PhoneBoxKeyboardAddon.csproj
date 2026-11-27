@@ -10,8 +10,8 @@
     <Product>PhoneBox Keyboard Add-on</Product>
     <Company>Community Add-on</Company>
     <Description>Independent global keyboard shortcuts for PhoneBox.</Description>
-    <Version>1.5.1</Version>
-    <InformationalVersion>1.5.1</InformationalVersion>
+    <Version>1.5.2</Version>
+    <InformationalVersion>1.5.2</InformationalVersion>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Web\phonebox-keyboard.ico</ApplicationIcon>
     <DebugType>embedded</DebugType>

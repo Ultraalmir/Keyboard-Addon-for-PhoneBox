@@ -1,3 +1,4 @@
+
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
@@ -13,6 +14,8 @@ internal sealed class TrayIconController : IDisposable
     private readonly Action _openSettings;
     private readonly Action _toggleShortcuts;
     private readonly Action _exit;
+    private readonly System.Windows.Forms.Timer _notificationTimer;
+    private bool _notificationWasVisible;
     private bool _disposed;
 
     internal TrayIconController(Action openSettings, Action toggleShortcuts, Action exit, bool shortcutsEnabled)
@@ -22,6 +25,7 @@ internal sealed class TrayIconController : IDisposable
         _exit = exit;
 
         var menu = new ContextMenuStrip();
+
         var openItem = new ToolStripMenuItem("Abrir configurações");
         openItem.Click += (_, _) => _openSettings();
 
@@ -42,6 +46,7 @@ internal sealed class TrayIconController : IDisposable
         menu.Items.Add(exitItem);
 
         _appIcon = LoadApplicationIcon();
+
         _notifyIcon = new NotifyIcon
         {
             Icon = _appIcon,
@@ -49,7 +54,18 @@ internal sealed class TrayIconController : IDisposable
             ContextMenuStrip = menu,
             Visible = false
         };
+
         _notifyIcon.DoubleClick += (_, _) => _openSettings();
+
+        // Initialize the timer only after the notification icon exists.
+        _notificationTimer = new System.Windows.Forms.Timer { Interval = 8000 };
+        _notificationTimer.Tick += (_, _) =>
+        {
+            _notificationTimer.Stop();
+
+            if (!_notificationWasVisible && !_disposed)
+                _notifyIcon.Visible = false;
+        };
     }
 
     internal bool Visible => _notifyIcon.Visible;
@@ -60,21 +76,52 @@ internal sealed class TrayIconController : IDisposable
         _notifyIcon.Visible = visible;
     }
 
+    internal void ShowNotification(string title, string message, ToolTipIcon icon = ToolTipIcon.Info)
+    {
+        if (_disposed) return;
+
+        try
+        {
+            _notificationWasVisible = _notifyIcon.Visible;
+            _notifyIcon.Visible = true;
+            _notifyIcon.ShowBalloonTip(6000, title, message, icon);
+
+            _notificationTimer.Stop();
+            _notificationTimer.Start();
+        }
+        catch (Exception ex)
+        {
+            AddonLog.Warn($"Não foi possível exibir a notificação: {ex.Message}");
+
+            if (!_notificationWasVisible)
+                _notifyIcon.Visible = false;
+        }
+    }
+
     internal void SetShortcutsEnabled(bool enabled)
     {
         if (_disposed) return;
+
         _shortcutsItem.Checked = enabled;
-        _shortcutsItem.Text = enabled ? "Atalhos globais ativados" : "Atalhos globais desativados";
+        _shortcutsItem.Text = enabled
+            ? "Atalhos globais ativados"
+            : "Atalhos globais desativados";
     }
 
     public void Dispose()
     {
         if (_disposed) return;
+
         _disposed = true;
+        _notificationTimer.Stop();
+        _notificationTimer.Dispose();
+
         _notifyIcon.Visible = false;
+
         var menu = _notifyIcon.ContextMenuStrip;
         _notifyIcon.Dispose();
         menu?.Dispose();
+
         _appIcon.Dispose();
     }
 
@@ -82,6 +129,9 @@ internal sealed class TrayIconController : IDisposable
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
             "PhoneBoxKeyboardAddon.Web.phonebox-keyboard.ico");
-        return stream is null ? (Icon)SystemIcons.Application.Clone() : new Icon(stream);
+
+        return stream is null
+            ? (Icon)SystemIcons.Application.Clone()
+            : new Icon(stream);
     }
 }

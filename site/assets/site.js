@@ -65,7 +65,7 @@
       faq1Q:'Does the add-on modify PhoneBox?', faq1A:'No. It is an independent Windows add-on. It sends navigation requests to the local PhoneBox agent API and does not replace or inject files into the original app.',
       faq2Q:'Does it work while other apps are open?', faq2A:'Yes. Shortcuts are registered globally by Windows. If another app already owns the same combination, registration may fail; choose a different key in the panel.',
       faq3Q:'Do I need to keep a window open?', faq3A:'No. The process runs in the background without a console or main window. The tray icon is optional and can be enabled in preferences.',
-      faq4Q:'Do Next and Previous work with more than ten pages?', faq4A:'Yes. With PhoneBox 0.9.31 or later, Next and Previous use the agent's native webhooks, which follow the page actually displayed and stop at the boundaries.',
+      faq4Q:'Do Next and Previous work with more than ten pages?', faq4A:'Yes. With PhoneBox 0.9.31 or later, Next and Previous use the agent’s native webhooks, which follow the page actually displayed and stop at the boundaries.',
       faq5Q:'Does the add-on send my data to the cloud?', faq5A:'The add-on uses no telemetry or cloud services. Its local settings panel listens on loopback on your computer, and navigation requests are sent to the local PhoneBox agent.',
       ctaEyebrow:'YOUR PANEL, YOUR KEYBOARD', ctaTitle:'Ready to take control?', ctaLead:'Download the stable release or explore the source code on GitHub.', downloadCta:'Download for Windows', starRepo:'View repository ↗',
       footerNote:'Independent community project. Not an official product and not affiliated with the PhoneBox maintainers.'

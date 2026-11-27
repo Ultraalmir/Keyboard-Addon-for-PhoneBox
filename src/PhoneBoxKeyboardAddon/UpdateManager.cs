@@ -68,7 +68,7 @@ internal sealed class UpdateManager
         if (!check.Success) return (false, check.Error ?? "Não foi possível verificar a atualização.");
         if (!check.UpdateAvailable) return (false, "O complemento já está na versão mais recente.");
         if (!check.CanAutoUpdate)
-            return (false, "A atualização automática está disponível somente para a instalação no Menu Iniciar. Execute o instalador da release para instalar esta cópia.");
+            return (false, "A atualização automática requer a instalação na pasta padrão do usuário. Execute o instalador da release para corrigir esta instalação.");
 
         var tempDir = Path.Combine(Path.GetTempPath(), "PhoneBoxKeyboardAddon-Update-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempDir);

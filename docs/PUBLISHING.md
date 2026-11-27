@@ -6,7 +6,8 @@ Este documento é destinado a mantenedores e colaboradores. Usuários finais dev
 
 - URL: https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox
 - Branch principal: `main`
-- Versão em preparação: `1.5.1`
+- Última versão publicada: `1.5.1`
+- Versão em preparação: `1.5.2`
 
 ## Requisitos para compilar
 
@@ -27,7 +28,7 @@ Abra o PowerShell na raiz do repositório e execute, nesta ordem:
 
 O script `publish-windows.ps1` restaura as dependências, compila o projeto em Release, executa os testes internos (`--self-test`) e publica um executável Windows `win-x64` autocontido em `artifacts\publish\PhoneBoxKeyboardAddon.exe`.
 
-O script `package.ps1` reúne o executável, o README, a licença e os scripts de instalação/desinstalação em `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`. Também gera o arquivo de checksum `artifacts\PhoneBoxKeyboardAddon-win-x64.zip.sha256`.
+O script `package.ps1` reúne o executável, o README, o launcher `Abrir-Configuracoes.bat`, a licença e os scripts de instalação/desinstalação em `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`. Também gera o arquivo de checksum `artifacts\PhoneBoxKeyboardAddon-win-x64.zip.sha256`.
 
 ### Validação manual
 

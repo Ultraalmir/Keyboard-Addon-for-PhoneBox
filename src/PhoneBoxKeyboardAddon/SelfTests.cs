@@ -38,6 +38,14 @@ internal static class SelfTests
             failures.Add("Os recursos do ícone personalizado do aplicativo não foram incorporados corretamente.");
         if (updateHelperResource is null || updateHelperResource.Length < 1000)
             failures.Add("O helper do atualizador não foi incorporado ao executável.");
+        else
+        {
+            using var helperReader = new StreamReader(updateHelperResource);
+            var helperText = helperReader.ReadToEnd();
+            if (!helperText.Contains("Write-UpdateResult 'success'", StringComparison.Ordinal)
+                || !helperText.Contains("Write-UpdateResult 'failure'", StringComparison.Ordinal))
+                failures.Add("O helper do atualizador não registra os resultados de sucesso e falha.");
+        }
 
         if (defaults.Bindings.Count != 10) failures.Add("A configuração padrão não contém dez posições de página.");
         for (var page = 1; page <= 10; page++)

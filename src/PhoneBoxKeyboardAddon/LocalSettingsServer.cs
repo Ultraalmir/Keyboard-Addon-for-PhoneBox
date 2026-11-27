@@ -359,7 +359,7 @@ internal sealed class LocalSettingsServer : IDisposable
         {
             var data = DeserializeBody<UninstallRequest>(request.Body);
             if (!UninstallScheduler.CanUninstall(Program.ExecutablePath))
-                throw new HttpInputException(409, "O complemento não está sendo executado a partir da pasta instalada. Use o instalador para reinstalar e abra as configurações pelo Menu Iniciar.");
+                throw new HttpInputException(409, "O complemento não está sendo executado a partir da pasta padrão instalada. Execute o instalador da release e abra as configurações pelo arquivo Abrir-Configuracoes.bat.");
 
             // The cleanup helper waits for this process to exit, then removes the
             // installed executable, shortcuts and optionally user data.

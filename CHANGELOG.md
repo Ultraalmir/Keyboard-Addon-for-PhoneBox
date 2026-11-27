@@ -1,5 +1,14 @@
 # Changelog
 
+
+## [1.5.2] - Em preparação
+
+### Corrigido
+- Corrigido o empacotamento local e dos workflows CI/Release, incluindo o launcher `Abrir-Configuracoes.bat` no ZIP.
+- Removidos os atalhos do Menu Iniciar; o acesso ao painel é feito pelo launcher incluído na pasta extraída.
+- Atualizadas as instruções e mensagens que ainda mencionavam o Menu Iniciar ou a navegação relativa antiga.
+- Corrigido erro de sintaxe JavaScript no texto em inglês do site.
+- Adicionada notificação na área de notificação do Windows após atualização automática bem-sucedida ou com falha; a notificação aparece uma única vez e a versão anterior é reiniciada em caso de falha.
 ## [Unreleased]
 
 ## [1.5.1] - 2026-11-26

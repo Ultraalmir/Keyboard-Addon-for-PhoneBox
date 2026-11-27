@@ -2,7 +2,7 @@
 
 Independent Windows companion for navigating PhoneBox pages with global keyboard shortcuts. It does not patch, inject into, or replace PhoneBox files.
 
-![Version](https://img.shields.io/badge/version-1.5.1-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-1.5.2-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 🌐 **Project website:** [ultraalmir.github.io/Keyboard-Addon-for-PhoneBox](https://ultraalmir.github.io/Keyboard-Addon-for-PhoneBox/) · [Latest download](https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox/releases/latest)
 
@@ -46,7 +46,7 @@ This keeps navigation synchronized after touch, swipe, PhoneBox rules, or anothe
 
 The built-in updater was introduced in version 1.5.0. Earlier installations, such as 1.4.0, must be upgraded manually once using the 1.5.0 release installer; subsequent versions can use the in-app updater. Automatic updates work only for installations created by the project installer.
 
-The settings panel checks stable GitHub Releases. When a newer version is available, it can download the official package, verify its SHA-256 checksum, and replace only the installed executable. The add-on closes and restarts automatically; `settings.json`, logs, and Start Menu shortcuts remain untouched. Automatic updates require an installation created by the project installer.
+The settings panel checks stable GitHub Releases. When a newer version is available, it can download the official package, verify its SHA-256 checksum, and replace only the installed executable. The add-on closes and restarts automatically; `settings.json` and logs remain untouched. Automatic updates require an installation created by the project installer.
 
 ## Requirements
 
@@ -80,7 +80,7 @@ The temporary policy ends when that PowerShell window closes. Installation is pe
 
 ## Optional Windows tray icon
 
-In the HTML panel's **Preferences** section, enable **Show tray icon** and save to display an icon next to the clock without restarting the add-on. The custom PhoneBox Keyboard icon is used by the executable and tray. The context menu opens settings, toggles global shortcuts, and exits. It is disabled by default. If hidden, open the panel from the **Settings** Start Menu shortcut.
+In the HTML panel's **Preferences** section, enable **Show tray icon** and save to display an icon next to the clock without restarting the add-on. The custom PhoneBox Keyboard icon is used by the executable and tray. The context menu opens settings, toggles global shortcuts, and exits. It is disabled by default. If hidden, run `Abrir-Configuracoes.bat` from the folder where you extracted the ZIP package.
 
 ## Customize HTML and CSS
 
@@ -93,7 +93,7 @@ The stylesheet is separate for easier layout editing. Both files are embedded in
 
 ## Settings and local data
 
-The shortcut process remains hidden. The HTML settings interface opens only when the user selects **Settings** from the Start Menu or launches the executable with `--settings`.
+The shortcut process remains hidden. The HTML settings interface opens when the user runs `Abrir-Configuracoes.bat` from the extracted package folder or launches the executable with `--settings`.
 
 | Data | Location |
 |---|---|
@@ -133,7 +133,7 @@ MIT. This is an independent community add-on, not an official PhoneBox component
 
 ## Uninstalling from the settings panel
 
-The settings panel can uninstall the add-on without running PowerShell scripts. It schedules a hidden cleanup helper that waits for the app process to exit, then removes the installed executable, Start Menu shortcuts and Startup shortcut. User settings and logs are preserved by default. They are deleted only when the user explicitly checks **Also delete settings and logs** and confirms. The executable and optional tray icon use `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico`. The status card now displays authoritative registration totals supplied by the local agent rather than relying only on JavaScript property counting.
+The settings panel can uninstall the add-on without running PowerShell scripts. It schedules a hidden cleanup helper that waits for the app process to exit, then removes the installed executable, any legacy Start Menu shortcuts and the Startup shortcut. User settings and logs are preserved by default. They are deleted only when the user explicitly checks **Also delete settings and logs** and confirms. The executable and optional tray icon use `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico`. The status card now displays authoritative registration totals supplied by the local agent rather than relying only on JavaScript property counting.
 
 ## Status card
 

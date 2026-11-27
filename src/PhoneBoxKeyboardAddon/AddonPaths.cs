@@ -7,6 +7,7 @@ internal static class AddonPaths
 
     internal static string SettingsFile => Path.Combine(DataDirectory, "settings.json");
     internal static string ControlPortFile => Path.Combine(DataDirectory, "control-panel.port");
+    internal static string UpdateResultFile => Path.Combine(DataDirectory, "update-result.txt");
     internal static string LocalAppDataDirectory { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PhoneBoxKeyboardAddon");
     internal static string LogDirectory => Path.Combine(LocalAppDataDirectory, "Logs");
@@ -21,5 +22,5 @@ internal static class AddonPaths
 internal static class ProductInfo
 {
     internal const string Name = "PhoneBox Keyboard Add-on";
-    internal const string Version = "1.5.1";
+    internal const string Version = "1.5.2";
 }

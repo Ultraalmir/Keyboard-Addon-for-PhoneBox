@@ -4,7 +4,7 @@
 
 Complemento independente para Windows que permite navegar pelas páginas do PhoneBox com atalhos globais de teclado. Não altera, injeta ou substitui arquivos do PhoneBox.
 
-![Versão](https://img.shields.io/badge/version-1.5.1-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Versão](https://img.shields.io/badge/version-1.5.2-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Recursos
 
@@ -47,7 +47,7 @@ Isso mantém a navegação sincronizada mesmo quando a página muda por toque, g
 
 O atualizador integrado foi introduzido na versão 1.5.0. Instalações anteriores, como a 1.4.0, precisam ser atualizadas manualmente uma vez usando o instalador da Release 1.5.0; a partir dela, versões posteriores podem usar a atualização integrada. A atualização automática só funciona para instalações feitas pelo instalador do projeto.
 
-O painel consulta as releases estáveis do GitHub. Quando encontra uma versão nova, permite baixar o pacote oficial, validar o SHA-256 e substituir somente o executável instalado. O complemento é fechado e reiniciado automaticamente; `settings.json`, logs e atalhos do Menu Iniciar permanecem intactos. A atualização automática exige que o complemento tenha sido instalado pelo instalador do projeto.
+O painel consulta as releases estáveis do GitHub. Quando encontra uma versão nova, permite baixar o pacote oficial, validar o SHA-256 e substituir somente o executável instalado. O complemento é fechado e reiniciado automaticamente; `settings.json` e logs permanecem intactos. A atualização automática exige que o complemento tenha sido instalado pelo instalador do projeto.
 
 ## Requisitos
 
@@ -81,7 +81,7 @@ Essa política temporária termina quando a janela do PowerShell é fechada. O i
 
 ## Ícone opcional na bandeja do Windows
 
-Na seção **Preferências** do painel HTML, marque **Mostrar ícone na bandeja** e salve para exibir o ícone personalizado PhoneBox Keyboard perto do relógio, sem reiniciar o complemento. O mesmo desenho também é usado como ícone do executável. O menu permite abrir as configurações, ativar/desativar os atalhos globais e sair. A opção vem desativada por padrão. Se o ícone estiver oculto, abra o painel pelo atalho **Configurações** no Menu Iniciar.
+Na seção **Preferências** do painel HTML, marque **Mostrar ícone na bandeja** e salve para exibir o ícone personalizado PhoneBox Keyboard perto do relógio, sem reiniciar o complemento. O mesmo desenho também é usado como ícone do executável. O menu permite abrir as configurações, ativar/desativar os atalhos globais e sair. A opção vem desativada por padrão. Se o ícone estiver oculto, execute `Abrir-Configuracoes.bat` na pasta em que o pacote ZIP foi extraído.
 
 ## Personalizar HTML e CSS
 
@@ -94,7 +94,7 @@ O CSS foi separado do HTML para facilitar a edição do layout. Ambos são incor
 
 ## Interface de configurações e dados locais
 
-O processo de atalhos permanece oculto. A interface HTML é aberta somente quando o usuário escolhe **Configurações** no Menu Iniciar ou executa o aplicativo com `--settings`.
+O processo de atalhos permanece oculto. A interface HTML é aberta quando o usuário executa `Abrir-Configuracoes.bat` na pasta extraída do pacote ou inicia o aplicativo com `--settings`.
 
 | Dados | Localização |
 |---|---|
@@ -117,7 +117,7 @@ As configurações são armazenadas fora da pasta de instalação e migradas aut
 
 ## Ícone do aplicativo e desinstalação
 
-O aplicativo e o ícone opcional da bandeja usam o recurso visual `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico` (também configurado como ícone do executável). O painel permite desinstalar o complemento sem executar scripts PowerShell: ele agenda um helper oculto que aguarda o processo encerrar e remove o executável instalado, os atalhos do Menu Iniciar e o atalho da pasta Startup. Por padrão, configurações e logs são preservados. Para apagá-los, o usuário precisa marcar explicitamente **Excluir também configurações e logs** e confirmar a ação.
+O aplicativo e o ícone opcional da bandeja usam o recurso visual `src/PhoneBoxKeyboardAddon/Web/phonebox-keyboard.ico` (também configurado como ícone do executável). O painel permite desinstalar o complemento sem executar scripts PowerShell: ele agenda um helper oculto que aguarda o processo encerrar e remove o executável instalado, os atalhos antigos do Menu Iniciar e o atalho da pasta Startup. Por padrão, configurações e logs são preservados. Para apagá-los, o usuário precisa marcar explicitamente **Excluir também configurações e logs** e confirmar a ação.
 
 O cartão **Atalhos registrados** recebe totais calculados pelo agente (`registeredCount`, `enabledRegistrationCount`, `actionCount`) e não depende da contagem no JavaScript. Isso evita que o painel mostre `0 de 0` por diferenças de serialização de nomes de propriedades.
 
