@@ -92,8 +92,14 @@ internal sealed class UpdateManager
             using (var archive = ZipFile.OpenRead(packagePath))
             {
                 var exe = archive.Entries.SingleOrDefault(e => e.FullName.Equals("PhoneBoxKeyboardAddon.exe", StringComparison.Ordinal));
+                var launcher = archive.Entries.SingleOrDefault(e => e.FullName.Equals("Abrir-Configuracoes.exe", StringComparison.Ordinal));
+                var manifest = archive.Entries.SingleOrDefault(e => e.FullName.Equals("PhoneBoxPackage.manifest", StringComparison.Ordinal));
                 if (exe is null || exe.Length < 100_000)
-                    throw new InvalidDataException("O pacote não contém o executável esperado.");
+                    throw new InvalidDataException("O pacote não contém o executável principal esperado.");
+                if (launcher is null || launcher.Length < 100_000)
+                    throw new InvalidDataException("O pacote não contém o launcher de configurações esperado.");
+                if (manifest is null || manifest.Length < 100)
+                    throw new InvalidDataException("O pacote não contém o manifesto de inventário esperado.");
             }
 
             var helper = Assembly.GetExecutingAssembly().GetManifestResourceStream("PhoneBoxKeyboardAddon.UpdateHelper.ps1")

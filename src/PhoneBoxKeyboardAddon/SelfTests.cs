@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Security.Cryptography;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -32,6 +33,10 @@ internal static class SelfTests
         using var trayIconResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.Web.phonebox-keyboard.ico");
         using var artworkResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.Web.phonebox-keyboard.png");
         using var updateHelperResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.UpdateHelper.ps1");
+        using var packageCleanupHelperResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.PackageCleanupHelper.ps1");
+        using var installCleanupHelperResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.InstallCleanupHelper.ps1");
+        if (installCleanupHelperResource is null)
+            failures.Add("O helper temporário de remoção da pasta de instalação não foi incorporado ao executável.");
         if (htmlResource is null || cssResource is null)
             failures.Add("Os recursos incorporados HTML/CSS do painel não foram encontrados.");
         if (trayIconResource is null || trayIconResource.Length < 1024 || artworkResource is null || artworkResource.Length < 1024)
@@ -43,8 +48,20 @@ internal static class SelfTests
             using var helperReader = new StreamReader(updateHelperResource);
             var helperText = helperReader.ReadToEnd();
             if (!helperText.Contains("Write-UpdateResult 'success'", StringComparison.Ordinal)
-                || !helperText.Contains("Write-UpdateResult 'failure'", StringComparison.Ordinal))
-                failures.Add("O helper do atualizador não registra os resultados de sucesso e falha.");
+                || !helperText.Contains("Write-UpdateResult 'failure'", StringComparison.Ordinal)
+                || !helperText.Contains("Abrir-Configuracoes.exe", StringComparison.Ordinal))
+                failures.Add("O helper do atualizador não atualiza o launcher ou não registra os resultados de sucesso e falha.");
+        }
+        if (packageCleanupHelperResource is null || packageCleanupHelperResource.Length < 1000)
+            failures.Add("O helper de validação final da pasta do pacote não foi incorporado ao executável.");
+        else
+        {
+            using var cleanupReader = new StreamReader(packageCleanupHelperResource);
+            var cleanupText = cleanupReader.ReadToEnd();
+            if (!cleanupText.Contains("PhoneBoxKeyboardAddonPackageManifest:v1", StringComparison.Ordinal)
+                || !cleanupText.Contains("Get-FileHash", StringComparison.Ordinal)
+                || !cleanupText.Contains("Remove-Item -LiteralPath $resolvedPackageRoot", StringComparison.Ordinal))
+                failures.Add("O helper de desinstalação não valida os hashes imediatamente antes da remoção.");
         }
 
         if (defaults.Bindings.Count != 10) failures.Add("A configuração padrão não contém dez posições de página.");
@@ -190,6 +207,67 @@ internal static class SelfTests
         }
         if (UninstallScheduler.CanUninstall(Path.Combine(Path.GetTempPath(), "not-the-installed-addon.exe")))
             failures.Add("O desinstalador ofereceu remover um executável que não está na pasta instalada.");
+
+        // The optional extracted-package cleanup must accept only a marked flat
+        // package whose exact file inventory and SHA-256 values match its manifest.
+        var packageTestDirectory = Path.Combine(Path.GetTempPath(), $"PhoneBox Keyboard & Add-on % teste {Guid.NewGuid():N}");
+        try
+        {
+            Directory.CreateDirectory(packageTestDirectory);
+            var packageFiles = new[]
+            {
+                "PhoneBoxKeyboardAddon.exe", "Abrir-Configuracoes.exe", "install.ps1",
+                "uninstall.ps1", "README.md", "LICENSE"
+            };
+            foreach (var file in packageFiles)
+                File.WriteAllText(Path.Combine(packageTestDirectory, file), "test");
+
+            var manifest = new
+            {
+                format = PackageSource.ManifestFormat,
+                files = packageFiles.Select(file => new
+                {
+                    name = file,
+                    sha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(Path.Combine(packageTestDirectory, file))))
+                }).ToArray()
+            };
+            File.WriteAllText(
+                Path.Combine(packageTestDirectory, PackageSource.ManifestFileName),
+                JsonSerializer.Serialize(manifest));
+            File.WriteAllText(Path.Combine(packageTestDirectory, PackageSource.MarkerFileName), PackageSource.MarkerContent);
+            if (!PackageSource.IsSafePackageDirectory(packageTestDirectory))
+                failures.Add("Um pacote de release de teste válido foi recusado pela validação da pasta de origem.");
+
+            var unexpectedFile = Path.Combine(packageTestDirectory, "arquivo-pessoal.txt");
+            File.WriteAllText(unexpectedFile, "nao deve ser removido automaticamente");
+            if (PackageSource.IsSafePackageDirectory(packageTestDirectory))
+                failures.Add("A validação aceitou arquivos extras que não constam no manifesto do pacote.");
+            File.Delete(unexpectedFile);
+
+            File.AppendAllText(Path.Combine(packageTestDirectory, "README.md"), " alterado");
+            if (PackageSource.IsSafePackageDirectory(packageTestDirectory))
+                failures.Add("A validação aceitou um arquivo do pacote cujo SHA-256 foi alterado.");
+            File.WriteAllText(Path.Combine(packageTestDirectory, "README.md"), "test");
+
+            var nestedDirectory = Path.Combine(packageTestDirectory, "subpasta-nao-permitida");
+            Directory.CreateDirectory(nestedDirectory);
+            if (PackageSource.IsSafePackageDirectory(packageTestDirectory))
+                failures.Add("A validação aceitou um pacote que contém uma subpasta inesperada.");
+            Directory.Delete(nestedDirectory);
+
+            Directory.CreateDirectory(Path.Combine(packageTestDirectory, ".git"));
+            if (PackageSource.IsSafePackageDirectory(packageTestDirectory))
+                failures.Add("A validação de desinstalação aceitou uma pasta que contém .git.");
+        }
+        catch (Exception ex)
+        {
+            failures.Add($"Não foi possível executar o teste de segurança da pasta do pacote: {ex.Message}");
+        }
+        finally
+        {
+            try { if (Directory.Exists(packageTestDirectory)) Directory.Delete(packageTestDirectory, recursive: true); }
+            catch (Exception ex) { failures.Add($"Não foi possível limpar a pasta temporária do teste: {ex.Message}"); }
+        }
 
         // Regression test: worker requests must be marshalled to the HWND-owning thread.
         try

@@ -6,8 +6,8 @@ Este documento é destinado a mantenedores e colaboradores. Usuários finais dev
 
 - URL: https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox
 - Branch principal: `main`
-- Última versão publicada: `1.5.1`
-- Versão em preparação: `1.5.2`
+- Última versão publicada: `1.5.2` (27/11/2026)
+- Versão em preparação: `1.5.3`
 
 ## Requisitos para compilar
 
@@ -22,13 +22,17 @@ Consulte a [matriz oficial de sistemas operacionais suportados pelo .NET](https:
 Abra o PowerShell na raiz do repositório e execute, nesta ordem:
 
 ```powershell
+.\scripts\validate-version.ps1
+.\scripts\validate-powershell.ps1
 .\scripts\publish-windows.ps1
 .\scripts\package.ps1
 ```
 
-O script `publish-windows.ps1` restaura as dependências, compila o projeto em Release, executa os testes internos (`--self-test`) e publica um executável Windows `win-x64` autocontido em `artifacts\publish\PhoneBoxKeyboardAddon.exe`.
+`validate-version.ps1` confirma que `Version` e `InformationalVersion` do aplicativo e do launcher, `ProductInfo.Version`, os badges dos dois READMEs e a primeira seção versionada do changelog estão sincronizados. `validate-powershell.ps1` analisa a sintaxe de todos os `.ps1` em `scripts/` e nos helpers incorporados em `src/PhoneBoxKeyboardAddon/`, incluindo o helper de limpeza da instalação. O `package.ps1` verifica as versões embutidas e as datas dos arquivos-fonte para não reutilizar artefatos desatualizados e valida o inventário e os hashes do ZIP concluído antes de escrever o checksum externo.
 
-O script `package.ps1` reúne o executável, o README, o launcher `Abrir-Configuracoes.bat`, a licença e os scripts de instalação/desinstalação em `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`. Também gera o arquivo de checksum `artifacts\PhoneBoxKeyboardAddon-win-x64.zip.sha256`.
+O script `publish-windows.ps1` restaura as dependências, compila o projeto principal em Release, executa os testes internos (`--self-test`) e publica dois executáveis Windows `win-x64` autocontidos: o aplicativo em `artifacts\publish\PhoneBoxKeyboardAddon.exe` e o launcher em `artifacts\publish-launcher\Abrir-Configuracoes.exe`. O launcher incorpora o mesmo ícone ICO do aplicativo.
+
+O script `package.ps1` reúne os arquivos publicados, o README, o launcher, a licença e os scripts de instalação/desinstalação em `artifacts\PhoneBoxKeyboardAddon-win-x64.zip`. Também gera `PhoneBoxPackage.manifest` dentro do ZIP, com o inventário e os hashes SHA-256 dos arquivos que serão usados para validar a remoção opcional da pasta extraída. Gera ainda `artifacts\SHA256SUMS.txt`, com o nome e o SHA-256 do ZIP, no mesmo formato que o atualizador espera. Os workflows CI e Release chamam esses mesmos scripts para evitar divergência de empacotamento.
 
 ### Validação manual
 
@@ -41,6 +45,7 @@ Depois da publicação, os comandos abaixo podem ser executados separadamente:
 
 - `--self-test` executa as verificações internas e retorna um código de saída apropriado para automação.
 - `--settings` inicia ou reutiliza o processo do complemento e abre o painel local de configurações no navegador.
+- `Abrir-Configuracoes.exe` abre o mesmo painel na instalação padrão e exibe uma mensagem informativa quando o aplicativo ainda não está instalado. O instalador copia o launcher para a pasta do aplicativo, junto do executável principal.
 
 Se a política de execução do PowerShell bloquear os scripts, use um bypass apenas para a sessão atual (não altere a política permanente da máquina):
 
@@ -77,16 +82,16 @@ Não inclua executáveis locais, arquivos `bin/`, `obj/`, `artifacts/`, logs ou 
 
 ## CI e publicação de Release
 
-O workflow **CI** é acionado em pushes para `main`/`master`, pull requests e execução manual. Ele restaura, compila, executa os self-tests, valida os scripts PowerShell e publica um pacote de teste como artefato.
+O workflow **CI** é acionado em pushes para `main`/`master`, pull requests e execução manual. Ele valida a consistência das versões, analisa a sintaxe de todos os scripts PowerShell do instalador e dos helpers, restaura, compila, executa os self-tests, empacota e publica um pacote de teste como artefato.
 
-Antes de publicar uma Release, confirme que o CI da versão desejada terminou com sucesso. Atualize a versão em todos os pontos de origem: `src/PhoneBoxKeyboardAddon/PhoneBoxKeyboardAddon.csproj` (`Version` e `InformationalVersion`), `src/PhoneBoxKeyboardAddon/AddonPaths.cs` (`ProductInfo.Version`), badges dos dois READMEs e `docs/PUBLISHING.md`; registre as mudanças no `CHANGELOG.md`, crie o commit e envie para `main`. Depois crie e envie a tag correspondente, substituindo `vX.Y.Z` pela versão escolhida:
+Antes de publicar uma Release, confirme que o CI da versão desejada terminou com sucesso. Atualize a versão em todos os pontos de origem: `src/PhoneBoxKeyboardAddon/PhoneBoxKeyboardAddon.csproj` (`Version` e `InformationalVersion`), `src/PhoneBoxKeyboardAddon/AddonPaths.cs` (`ProductInfo.Version`), `src/SettingsLauncher/SettingsLauncher.csproj` e badges dos dois READMEs. Atualize o cabeçalho da versão no `CHANGELOG.md` de `Em preparação` para a data real no formato `YYYY-MM-DD`; atualize também `docs/PUBLISHING.md` para refletir a nova última versão publicada e a próxima versão em preparação, quando existir. Faça o commit e envie para `main`. O workflow de Release confere a tag, os metadados de versão e a data do changelog antes de compilar. Depois crie e envie a tag correspondente, substituindo `vX.Y.Z` pela versão escolhida:
 
 ```powershell
 git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
-O workflow **Release**, acionado por tags `v*`, compila o executável Windows x64 autocontido, cria `PhoneBoxKeyboardAddon-win-x64.zip`, gera `SHA256SUMS.txt` e publica os arquivos na página **Releases** do GitHub.
+O workflow **Release**, acionado por tags `v*`, primeiro exige que a tag corresponda à versão do aplicativo, do launcher e de `ProductInfo.Version`, e que o changelog contenha uma data válida para essa versão. Em seguida, analisa a sintaxe dos helpers, compila os dois executáveis Windows x64 autocontidos, valida o inventário e os hashes internos do ZIP, gera `SHA256SUMS.txt` e publica os dois assets na página **Releases** do GitHub. O launcher `Abrir-Configuracoes.exe` é incluído no ZIP oficial com ícone incorporado. O comando de publicação usa `--verify-tag` para confirmar que a tag existe.
 
 ## GitHub Pages
 
@@ -94,10 +99,14 @@ A página estática fica em `site/` e é publicada pelo workflow `.github/workfl
 
 ## Checklist do mantenedor
 
-1. Compile em Windows 11 x64 ou em uma edição/versão Windows 10 LTSC/Enterprise suportada, usando o .NET 10 SDK: `scripts\publish-windows.ps1`.
-2. Confirme os self-tests e siga `docs/TEST-PLAN.md` para os testes que dependem do Windows e do PhoneBox.
-3. Confira os arquivos modificados com `git status` e `git diff --check`.
-4. Atualize `CHANGELOG.md` e os READMEs quando o comportamento, a compatibilidade ou a instalação mudar.
-5. Aguarde o CI ficar verde antes de criar uma tag de Release.
-6. Após a publicação, confira os arquivos, o checksum e as notas em GitHub Releases.
-7. Se o site tiver sido modificado, confira também a execução do workflow GitHub Pages e a página pública.
+1. Valide as versões e a sintaxe dos scripts com `scripts\validate-version.ps1` e `scripts\validate-powershell.ps1`.
+2. Compile em Windows 11 x64 ou em uma edição/versão Windows 10 LTSC/Enterprise suportada, usando o .NET 10 SDK: `scripts\publish-windows.ps1`.
+3. Confirme os self-tests e siga `docs/TEST-PLAN.md` para os testes que dependem do Windows e do PhoneBox.
+4. Confira os arquivos modificados com `git status` e `git diff --check`.
+5. Atualize `CHANGELOG.md`, os READMEs e `docs/PUBLISHING.md` quando o comportamento, a compatibilidade, a instalação ou o estado da Release mudar.
+6. Aguarde o CI ficar verde antes de criar uma tag de Release; o workflow também exige data real no cabeçalho do changelog.
+7. Após a publicação, confira os arquivos, o checksum e as notas em GitHub Releases.
+8. Se o site tiver sido modificado, confira também a execução do workflow GitHub Pages e a página pública.
+9. Teste o launcher com e sem instalação, nas cópias da pasta extraída e da pasta instalada, além das combinações de desinstalação (preservar dados, remover dados e remover também a pasta extraída). Acrescente um arquivo pessoal e altere um arquivo do pacote para confirmar que o manifesto bloqueia a remoção da pasta.
+
+Para instalações 1.5.2, a atualização incremental não conhece o caminho onde o ZIP foi extraído. Para habilitar a remoção opcional da pasta antiga, extraia o ZIP 1.5.3 sobre o mesmo diretório e execute `install.ps1` nesse local. Se o pacote 1.5.3 for extraído em outro diretório, o caminho antigo não poderá ser inferido e precisará ser removido manualmente.

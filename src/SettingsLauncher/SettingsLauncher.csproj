@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Abrir-Configuracoes</AssemblyName>
+    <Product>PhoneBox Keyboard Add-on - Settings Launcher</Product>
+    <Description>Opens the installed PhoneBox Keyboard Add-on settings panel.</Description>
+    <Version>1.5.3</Version>
+    <InformationalVersion>1.5.3</InformationalVersion>
+    <ApplicationIcon>..\PhoneBoxKeyboardAddon\Web\phonebox-keyboard.ico</ApplicationIcon>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <UseAppHost>true</UseAppHost>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+</Project>

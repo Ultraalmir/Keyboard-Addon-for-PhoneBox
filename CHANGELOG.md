@@ -1,7 +1,21 @@
-# Changelog
+## [Unreleased]
 
+## [1.5.3] - 2026-11-27
 
-## [1.5.2] - Em preparação
+### Adicionado
+- Launcher `Abrir-Configuracoes.exe` autocontido, com o ícone do PhoneBox Keyboard incorporado, para abrir o painel da instalação padrão. O instalador também copia o launcher para a pasta do aplicativo, preservando o acesso às configurações quando a pasta de extração for removida. O atualizador das próximas versões também substitui o launcher com backup e rollback.
+- Opção explícita no painel para remover também a pasta extraída do pacote oficial, com manifesto de inventário e hashes SHA-256, verificação de marcador/estrutura, caminhos protegidos e bloqueio de arquivos extras, pastas aninhadas e junctions. O helper oculto repete a validação imediatamente antes da exclusão.
+- Registro do local do pacote durante a instalação oficial, sem registrar instalações de desenvolvimento. Ao atualizar sobre a pasta extraída oficial da 1.5.2, o instalador remove o BAT antigo somente se o hash corresponder exatamente ao arquivo original; cópias modificadas são preservadas e bloqueiam a remoção automática da pasta.
+
+### Corrigido
+- Corrigida a validação do inventário do pacote no PowerShell: a comparação de `HashSet` agora é construída item a item, evitando falha de vinculação de sobrecarga ao receber `Object[]`; o erro deixa de ser engolido silenciosamente e passa a gerar aviso. A correção foi aplicada ao instalador, desinstalador manual e helper oculto.
+- Desinstalação remove a pasta local de logs inteira quando o usuário escolhe apagar os dados, evitando deixar diretórios vazios.
+- A remoção da pasta de instalação agora é executada por um helper PowerShell temporário fora da pasta-alvo, com caminho fixo validado, rejeição de junctions/symlinks, até seis tentativas e registro do erro real. O desinstalador só registra sucesso quando o diretório realmente deixa de existir.
+- Scripts locais, CI e Release passam a usar o mesmo fluxo de publicação/empacotamento e o manifesto `SHA256SUMS.txt` esperado pelo atualizador.
+- CI e Release validam a consistência das versões do aplicativo, do launcher e de `ProductInfo.Version`; a validação PowerShell também cobre todos os helpers incorporados. O empacotador rejeita binários desatualizados e valida o inventário e os hashes internos do ZIP antes de gerar o manifesto externo.
+- Atualizadas as instruções de instalação, lançamento e desinstalação para o novo launcher.
+
+## [1.5.2] - 2026-11-27
 
 ### Corrigido
 - Corrigido o empacotamento local e dos workflows CI/Release, incluindo o launcher `Abrir-Configuracoes.bat` no ZIP.
@@ -9,7 +23,6 @@
 - Atualizadas as instruções e mensagens que ainda mencionavam o Menu Iniciar ou a navegação relativa antiga.
 - Corrigido erro de sintaxe JavaScript no texto em inglês do site.
 - Adicionada notificação na área de notificação do Windows após atualização automática bem-sucedida ou com falha; a notificação aparece uma única vez e a versão anterior é reiniciada em caso de falha.
-## [Unreleased]
 
 ## [1.5.1] - 2026-11-26
 

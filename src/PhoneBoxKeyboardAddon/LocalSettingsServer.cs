@@ -221,6 +221,7 @@ internal sealed class LocalSettingsServer : IDisposable
                 actionCount = statusRows.Count,
                 capturing = _hotkeys.IsSuspended,
                 canUninstall = UninstallScheduler.CanUninstall(Program.ExecutablePath),
+                canRemovePackageFiles = UninstallScheduler.CanRemovePackageFiles,
                 lastAction = new { message = last.Message, at = last.At, success = last.Success }
             };
             await WriteJsonAsync(stream, 200, payload, cancellationToken);
@@ -359,17 +360,21 @@ internal sealed class LocalSettingsServer : IDisposable
         {
             var data = DeserializeBody<UninstallRequest>(request.Body);
             if (!UninstallScheduler.CanUninstall(Program.ExecutablePath))
-                throw new HttpInputException(409, "O complemento não está sendo executado a partir da pasta padrão instalada. Execute o instalador da release e abra as configurações pelo arquivo Abrir-Configuracoes.bat.");
+                throw new HttpInputException(409, "O complemento não está sendo executado a partir da pasta padrão instalada. Execute o instalador da release e abra as configurações pelo arquivo Abrir-Configuracoes.exe.");
 
             // The cleanup helper waits for this process to exit, then removes the
             // installed executable, shortcuts and optionally user data.
-            var cleanupScript = UninstallScheduler.Schedule(data.RemoveUserData);
+            var cleanupScript = UninstallScheduler.Schedule(data.RemoveUserData, data.RemovePackageFiles);
             await WriteJsonAsync(stream, 200, new
             {
                 success = true,
-                message = data.RemoveUserData
-                    ? "Desinstalação agendada. O aplicativo, as configurações e os logs serão removidos."
-                    : "Desinstalação agendada. As configurações e os logs serão preservados.",
+                message = data.RemoveUserData && data.RemovePackageFiles
+                    ? "Desinstalação agendada. Aplicativo, dados do usuário e pasta extraída serão removidos."
+                    : data.RemovePackageFiles
+                        ? "Desinstalação agendada. O aplicativo e a pasta extraída serão removidos; configurações e logs serão preservados."
+                        : data.RemoveUserData
+                            ? "Desinstalação agendada. O aplicativo, as configurações e os logs serão removidos."
+                            : "Desinstalação agendada. As configurações e os logs serão preservados.",
                 cleanup = Path.GetFileName(cleanupScript)
             }, cancellationToken);
             _ = Task.Run(async () =>
@@ -650,4 +655,8 @@ internal sealed class LocalSettingsServer : IDisposable
     }
 }
 
-internal sealed class UninstallRequest { public bool RemoveUserData { get; set; } }
+internal sealed class UninstallRequest
+{
+    public bool RemoveUserData { get; set; }
+    public bool RemovePackageFiles { get; set; }
+}

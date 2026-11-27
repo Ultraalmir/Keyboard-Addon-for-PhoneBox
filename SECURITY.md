@@ -15,4 +15,5 @@ Please do not publish exploitable details in a public issue. Contact the reposit
 - The PhoneBox destination is restricted to a loopback HTTP URL. Its port is configurable, but the client only calls fixed API paths and never follows redirects.
 - The application does not accept remote configuration commands or expose a LAN listener.
 - The process runs as the current user and does not request administrator privileges.
+- Optional removal of the extracted release folder requires an exact file inventory and SHA-256 manifest match. The installer and the final hidden cleanup helper both reject extra or modified files, nested directories, reparse points, repository folders, and protected system locations.
 - The loopback server is intended for the local user's settings page, not as authentication against other processes already running on the same Windows account. It has no bearer token; do not run untrusted local software alongside it.
