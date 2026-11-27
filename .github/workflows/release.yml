@@ -26,7 +26,7 @@ jobs:
       - name: Validate PowerShell scripts
         shell: pwsh
         run: |
-          $scriptFiles = Get-ChildItem scripts -Filter *.ps1 -File
+          $scriptFiles = @(Get-ChildItem scripts -Filter *.ps1 -File) + @(Get-Item src/PhoneBoxKeyboardAddon/UpdateHelper.ps1)
           foreach ($scriptFile in $scriptFiles) {
             $tokens = $null
             $parseErrors = $null

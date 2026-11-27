@@ -67,6 +67,51 @@ internal sealed class PhoneBoxClient : IDisposable
         }
     }
 
+    internal static string RelativeNavigationPath(bool next) => next ? "/api/goto/next" : "/api/goto/prev";
+
+    internal async Task<(bool Success, string Message)> NavigateRelativeAsync(AddonSettings settings, bool next)
+    {
+        var direction = next ? "next" : "prev";
+        try
+        {
+            var baseUrl = settings.PhoneBoxUrl.TrimEnd('/');
+            using var response = await _http.PostAsync(baseUrl + RelativeNavigationPath(next), content: null);
+            if (response.IsSuccessStatusCode)
+            {
+                var message = next ? "Solicitação de próxima página enviada ao PhoneBox." : "Solicitação de página anterior enviada ao PhoneBox.";
+                SetResult(true, message);
+                AddonLog.Info($"Navegação relativa enviada ao PhoneBox: {direction}.");
+                return (true, message);
+            }
+
+            var details = response.StatusCode == System.Net.HttpStatusCode.NotFound
+                ? "Navegação Próxima/Anterior exige PhoneBox 0.9.31 ou posterior (webhook não encontrado)."
+                : $"PhoneBox respondeu {(int)response.StatusCode} ({response.StatusCode}) ao solicitar {direction}.";
+            SetResult(false, details);
+            AddonLog.Warn(details);
+            return (false, details);
+        }
+        catch (TaskCanceledException)
+        {
+            const string message = "Tempo esgotado ao solicitar navegação relativa ao PhoneBox.";
+            SetResult(false, message);
+            return (false, message);
+        }
+        catch (HttpRequestException ex)
+        {
+            const string message = "Não foi possível conectar ao PhoneBox. Verifique se o agente está em execução.";
+            SetResult(false, message);
+            AddonLog.Warn($"Falha de conexão na navegação relativa: {ex.Message}");
+            return (false, message);
+        }
+        catch (Exception ex)
+        {
+            SetResult(false, ex.Message);
+            AddonLog.Error("Erro ao solicitar navegação relativa ao PhoneBox.", ex);
+            return (false, ex.Message);
+        }
+    }
+
     /// <summary>
     /// Reads the public PhoneBox configuration to determine the enabled page order/count.
     /// This does not expose credentials or private configuration; the documented public API

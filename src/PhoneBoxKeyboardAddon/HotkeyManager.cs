@@ -11,14 +11,12 @@ internal sealed class HotkeyManager : IDisposable
     private readonly object _sync = new();
     private readonly SemaphoreSlim _navigationGate = new(1, 1);
     private readonly PhoneBoxClient _client;
-    private readonly Action<int>? _persistNavigationCursor;
     private readonly Dictionary<int, RegisteredHotkey> _registered = [];
     private List<HotkeyRegistrationStatus> _statuses = [];
     private IntPtr _windowHandle;
     private int _ownerThreadId;
     private AddonSettings _settings;
     private bool _suspended;
-    private int _navigationCursorPage;
 
     [DllImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -28,12 +26,10 @@ internal sealed class HotkeyManager : IDisposable
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
-    internal HotkeyManager(PhoneBoxClient client, AddonSettings settings, Action<int>? persistNavigationCursor = null)
+    internal HotkeyManager(PhoneBoxClient client, AddonSettings settings)
     {
         _client = client;
-        _persistNavigationCursor = persistNavigationCursor;
         _settings = settings.DeepClone();
-        _navigationCursorPage = Math.Max(1, _settings.NavigationStartPage);
     }
 
     internal void AttachWindow(IntPtr handle)
@@ -49,18 +45,12 @@ internal sealed class HotkeyManager : IDisposable
         get { lock (_sync) return _statuses.ToArray(); }
     }
 
-    internal int NavigationCursorPage
-    {
-        get { lock (_sync) return _navigationCursorPage; }
-    }
-
     internal IReadOnlyList<HotkeyRegistrationStatus> Apply(AddonSettings settings)
     {
         EnsureOwnerThread();
         lock (_sync)
         {
             _settings = settings.DeepClone();
-            _navigationCursorPage = Math.Max(1, _settings.NavigationStartPage);
             return ApplyUnsafe();
         }
     }
@@ -179,8 +169,16 @@ internal sealed class HotkeyManager : IDisposable
         await _navigationGate.WaitAsync();
         try
         {
-            // PhoneBox does not expose the currently visible page through its local webhook API.
-            // Fetch the enabled page order and use a user-configurable cursor for relative navigation.
+            // PhoneBox 0.9.31 owns relative navigation. It knows the page currently
+            // displayed on the phone, so never calculate Next/Previous from a local cursor.
+            if (action.Direction != NavigationDirection.None)
+            {
+                var relative = await _client.NavigateRelativeAsync(
+                    settings, action.Direction == NavigationDirection.Next);
+                if (!relative.Success) _client.RecordFailure(relative.Message);
+                return;
+            }
+
             var pageResult = await _client.GetPagesAsync(settings);
             if (!pageResult.Success)
             {
@@ -189,29 +187,10 @@ internal sealed class HotkeyManager : IDisposable
             }
 
             var count = pageResult.Pages.Count;
-            if (count == 0)
-            {
-                _client.RecordFailure("O PhoneBox não informou páginas habilitadas.");
-                return;
-            }
-
-            int targetPage;
-            string? validationError = null;
-            lock (_sync)
-            {
-                if (action.Direction == NavigationDirection.None)
-                {
-                    targetPage = action.Page!.Value;
-                    if (targetPage > count)
-                        validationError = $"A página {targetPage} não existe entre as {count} páginas habilitadas no PhoneBox.";
-                }
-                else
-                {
-                    var current = NavigationCursor.Normalize(_navigationCursorPage, settings.NavigationStartPage, count);
-                    targetPage = NavigationCursor.Move(current, count,
-                        action.Direction == NavigationDirection.Next ? 1 : -1);
-                }
-            }
+            var targetPage = action.Page!.Value;
+            string? validationError = targetPage > count
+                ? $"A página {targetPage} não existe entre as {count} páginas habilitadas no PhoneBox."
+                : null;
 
             if (validationError is not null)
             {
@@ -228,18 +207,9 @@ internal sealed class HotkeyManager : IDisposable
                 return;
             }
 
-            // Commit the local cursor only after PhoneBox accepted the navigation event.
-            // A failed HTTP request must not silently move the cursor away from the phone.
-            var navigation = await _client.NavigateAsync(settings, target.Id, target.Title);
-            if (navigation.Success)
-            {
-                lock (_sync) _navigationCursorPage = targetPage;
-                try { _persistNavigationCursor?.Invoke(targetPage); }
-                catch (Exception persistException)
-                {
-                    AddonLog.Error("A página foi aberta, mas não foi possível persistir o cursor de navegação.", persistException);
-                }
-            }
+            // Direct page shortcuts still resolve the configured position to a stable
+            // PhoneBox page ID; relative navigation is handled by PhoneBox itself.
+            await _client.NavigateAsync(settings, target.Id, target.Title);
         }
         catch (Exception ex)
         {

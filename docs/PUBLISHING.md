@@ -6,7 +6,7 @@ Este documento é destinado a mantenedores e colaboradores. Usuários finais dev
 
 - URL: https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox
 - Branch principal: `main`
-- Versão atual documentada: `1.4.0`
+- Versão atual documentada: `1.5.0`
 
 ## Requisitos para compilar
 
@@ -54,7 +54,7 @@ Execute na raiz do projeto. Se o repositório Git já estiver inicializado e o r
 ```powershell
 git init
 git add .
-git commit -m "Initial release: PhoneBox Keyboard Add-on 1.4.0"
+git commit -m "Initial release: PhoneBox Keyboard Add-on 1.5.0"
 git branch -M main
 git remote add origin https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox.git
 git push -u origin main

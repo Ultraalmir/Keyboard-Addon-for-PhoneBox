@@ -6,3 +6,6 @@
 
 /* Compact bilingual language picker */
 .top-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.language-picker{display:inline-flex;align-items:center;gap:3px;padding:3px;border:1px solid #34415c;background:#111927;border-radius:999px}.language-button{min-width:38px;padding:6px 9px;border:0;border-radius:999px;background:transparent;color:#aab7cc;font-size:11px;font-weight:800;cursor:pointer;transition:background .16s,color .16s}.language-button:hover{color:#fff;background:#26334a}.language-button.active{background:linear-gradient(135deg,#8899ff,#667bea);color:#0b1020;box-shadow:0 3px 12px #6176e433}.language-button:focus-visible{outline:2px solid #a6b4ff;outline-offset:2px}.guide-list{margin:0;padding-left:20px;color:#bac6da;font-size:11px;line-height:1.8}.guide-list li{padding-left:2px;margin:2px 0}@media(max-width:760px){.top{flex-wrap:wrap}.top-actions{width:100%;justify-content:space-between}.language-picker{order:0}.running{order:1}}
+
+[hidden]{display:none!important}.update-panel{border-color:rgba(89,164,255,.45)}.update-panel .btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.uninstall-hint{margin-top:12px;line-height:1.55;max-width:560px}

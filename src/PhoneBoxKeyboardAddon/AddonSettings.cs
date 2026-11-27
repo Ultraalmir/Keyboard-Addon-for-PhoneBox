@@ -127,19 +127,6 @@ internal sealed class ConfigStore
         }
     }
 
-    internal void SaveNavigationCursor(int page)
-    {
-        lock (_sync)
-        {
-            // Load() uses the same re-entrant monitor, so this read/modify/write cannot
-            // overwrite concurrent keybinding changes submitted by the settings panel.
-            var settings = Load();
-            settings.NavigationStartPage = Math.Clamp(page, 1, 500);
-            Normalize(settings);
-            SaveUnsafe(settings);
-        }
-    }
-
     private static void SaveUnsafe(AddonSettings settings)
     {
         var temp = AddonPaths.SettingsFile + ".tmp";

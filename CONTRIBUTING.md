@@ -25,7 +25,7 @@ Do not attach tokens, private device identifiers, or unrelated personal data.
 ## Pull requests
 
 - Keep the add-on independent from the PhoneBox installation and source tree.
-- Do not add external network services or telemetry.
+- Keep external communication limited to the documented GitHub Releases update check/download; do not add telemetry or remote-control services.
 - Keep the local settings server bound to loopback and preserve its Host/Origin checks.
 - Add or extend self-tests for key mapping, settings validation, and serialization.
 - Update README and CHANGELOG when behavior changes.

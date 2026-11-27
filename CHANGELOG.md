@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-11-26
+
+### Added
+- Added a GitHub Releases update checker to the local settings panel, with installed/latest version details and a direct release link.
+- Added an assisted in-app updater that downloads the official release package, verifies its SHA-256 checksum, backs up the installed executable, replaces only that executable, and restarts the add-on.
+- Added rollback to the previous executable if the update helper encounters a replacement failure.
+
+### Changed
+- Switched Next/Previous to PhoneBox 0.9.31 native `POST /api/goto/next` and `POST /api/goto/prev` webhooks.
+- Removed the add-on-maintained relative navigation cursor; PhoneBox now resolves the currently displayed page and stops at the first/last page.
+- Kept user settings and logs outside the installation directory so incremental executable updates preserve them.
+- Bumped the application version to 1.5.0.
+
+### Compatibility
+- PhoneBox 0.9.31 or later is required for native Next/Previous navigation. Direct page shortcuts continue using the existing `/api/config` and `/api/goto/{page}` endpoints.
+
 ### Documentation
 - Clarify .NET 10 Windows compatibility in both user guides and the project website; Windows 10 is limited to Enterprise/LTSC releases that remain within Microsoft's support lifecycle and are supported by .NET 10.
 - Move maintainer-only build, self-test, packaging, Git and release commands from the user-facing READMEs into `docs/PUBLISHING.md`.

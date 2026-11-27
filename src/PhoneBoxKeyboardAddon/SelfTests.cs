@@ -31,10 +31,13 @@ internal static class SelfTests
         using var cssResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.Web.settings.css");
         using var trayIconResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.Web.phonebox-keyboard.ico");
         using var artworkResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.Web.phonebox-keyboard.png");
+        using var updateHelperResource = assembly.GetManifestResourceStream("PhoneBoxKeyboardAddon.UpdateHelper.ps1");
         if (htmlResource is null || cssResource is null)
             failures.Add("Os recursos incorporados HTML/CSS do painel não foram encontrados.");
         if (trayIconResource is null || trayIconResource.Length < 1024 || artworkResource is null || artworkResource.Length < 1024)
             failures.Add("Os recursos do ícone personalizado do aplicativo não foram incorporados corretamente.");
+        if (updateHelperResource is null || updateHelperResource.Length < 1000)
+            failures.Add("O helper do atualizador não foi incorporado ao executável.");
 
         if (defaults.Bindings.Count != 10) failures.Add("A configuração padrão não contém dez posições de página.");
         for (var page = 1; page <= 10; page++)
@@ -64,6 +67,12 @@ internal static class SelfTests
             failures.Add("Numpad + não foi mapeado para Próxima página.");
         if (!HotkeyCatalog.TryGetVirtualKey(defaults.PreviousPage.Key, out var previousVk) || previousVk != 0x6D)
             failures.Add("Numpad - não foi mapeado para Página anterior.");
+        if (PhoneBoxClient.RelativeNavigationPath(next: true) != "/api/goto/next"
+            || PhoneBoxClient.RelativeNavigationPath(next: false) != "/api/goto/prev")
+            failures.Add("Os atalhos relativos não apontam para os webhooks nativos do PhoneBox 0.9.31.");
+        const string sampleHash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        if (UpdateManager.ReadExpectedHash(sampleHash + "  PhoneBoxKeyboardAddon-win-x64.zip") != sampleHash)
+            failures.Add("O verificador de atualização não reconheceu o checksum SHA-256 do pacote.");
         if (SettingsValidator.Validate(defaults).Count != 0)
             failures.Add("A configuração padrão não passou na validação.");
 
@@ -86,15 +95,6 @@ internal static class SelfTests
             || legacySettings.Bindings.Single(b => b.Page == 1).Modifiers.Single() != "Alt"
             || legacySettings.Bindings.Any(b => b.Page is >= 8 and <= 10 && b.Enabled))
             failures.Add("A migração de configurações v1 não preservou combinações personalizadas, os sete atalhos antigos e os novos padrões desativados.");
-        if (NavigationCursor.Move(10, 10, 1) != 1) failures.Add("Próxima página não retorna à página 1 após a última.");
-        if (NavigationCursor.Move(1, 10, -1) != 10) failures.Add("Página anterior não retorna à última página após a primeira.");
-        if (NavigationCursor.Move(4, 10, 1) != 5 || NavigationCursor.Move(4, 10, -1) != 3)
-            failures.Add("A navegação relativa não avançou/retrocedeu uma posição corretamente.");
-        if (NavigationCursor.Move(10, 24, 1) != 11 || NavigationCursor.Move(24, 24, 1) != 1
-            || NavigationCursor.Move(1, 24, -1) != 24)
-            failures.Add("A navegação relativa não percorreu corretamente uma lista com mais de dez páginas.");
-        if (NavigationCursor.Normalize(0, 4, 10) != 4 || NavigationCursor.Normalize(12, 4, 10) != 4)
-            failures.Add("A posição de navegação inválida não foi corrigida pela posição inicial.");
         if (SettingsValidator.AllEnabledHotkeys(defaults).Count() != 9)
             failures.Add("A configuração padrão não habilitou sete atalhos diretos e as duas ações relativas.");
         var allTwelve = defaults.DeepClone();
@@ -255,7 +255,7 @@ internal static class SelfTests
 
         if (failures.Count == 0)
         {
-            AddonLog.Info("Self-test concluído: dez slots, navegação relativa, mapeamento de teclas, validação, contrato JSON de status, recursos do ícone, desinstalação segura, registro/suspensão/reativação de hotkeys e despacho de thread aprovados.");
+            AddonLog.Info("Self-test concluído: dez slots, navegação relativa nativa, mapeamento de teclas, validação, contrato JSON de status, recursos do ícone, desinstalação segura, registro/suspensão/reativação de hotkeys e despacho de thread aprovados.");
             return 0;
         }
 

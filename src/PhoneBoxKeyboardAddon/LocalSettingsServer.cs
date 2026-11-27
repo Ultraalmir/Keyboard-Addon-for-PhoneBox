@@ -16,6 +16,7 @@ internal sealed class LocalSettingsServer : IDisposable
     private readonly PhoneBoxClient _phoneBox;
     private readonly HotkeyWindow _window;
     private readonly TrayIconController _trayIcon;
+    private readonly UpdateManager _updates = new();
     private TcpListener? _listener;
     private readonly CancellationTokenSource _stop = new();
     private readonly SemaphoreSlim _captureGate = new(1, 1);
@@ -159,6 +160,29 @@ internal sealed class LocalSettingsServer : IDisposable
             return;
         }
 
+        if (request.Method == "GET" && path == "/api/update")
+        {
+            var update = await _updates.CheckAsync();
+            await WriteJsonAsync(stream, update.Success ? 200 : 503, update, cancellationToken);
+            return;
+        }
+
+        if (request.Method == "POST" && path == "/api/update/install")
+        {
+            var result = await _updates.PrepareAndLaunchAsync();
+            await WriteJsonAsync(stream, result.Success ? 202 : 409,
+                new { success = result.Success, message = result.Message }, cancellationToken);
+            if (result.Success)
+            {
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(400);
+                    _window.RequestShutdown();
+                });
+            }
+            return;
+        }
+
         if (request.Method == "GET" && path == "/api/config")
         {
             await WriteJsonAsync(stream, 200, _store.Load(), cancellationToken);
@@ -196,7 +220,6 @@ internal sealed class LocalSettingsServer : IDisposable
                 registeredCount = statusRows.Count(row => row.Registered),
                 actionCount = statusRows.Count,
                 capturing = _hotkeys.IsSuspended,
-                navigationCursorPage = _hotkeys.NavigationCursorPage,
                 canUninstall = UninstallScheduler.CanUninstall(Program.ExecutablePath),
                 lastAction = new { message = last.Message, at = last.At, success = last.Success }
             };
@@ -209,7 +232,7 @@ internal sealed class LocalSettingsServer : IDisposable
             var result = await _phoneBox.GetPagesAsync(_store.Load(), forceRefresh: true);
             await WriteJsonAsync(stream, result.Success ? 200 : 503,
                 new { success = result.Success, message = result.Message, count = result.Pages.Count,
-                    cursorPage = _hotkeys.NavigationCursorPage, pages = result.Pages }, cancellationToken);
+                    pages = result.Pages }, cancellationToken);
             return;
         }
 

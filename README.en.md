@@ -2,7 +2,7 @@
 
 Independent Windows companion for navigating PhoneBox pages with global keyboard shortcuts. It does not patch, inject into, or replace PhoneBox files.
 
-![Version](https://img.shields.io/badge/version-1.4.0-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-1.5.0-6478f5) ![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 🌐 **Project website:** [ultraalmir.github.io/Keyboard-Addon-for-PhoneBox](https://ultraalmir.github.io/Keyboard-Addon-for-PhoneBox/) · [Latest download](https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox/releases/latest)
 
@@ -16,7 +16,7 @@ Independent Windows companion for navigating PhoneBox pages with global keyboard
 - Bilingual settings panel with a Portuguese (Brazil) / English selector; the selected language is saved and retained across restarts and updates.
 - Silent background operation: no console or main window; the notification-area icon is optional and controlled from the HTML panel.
 - Optional per-user Windows startup shortcut.
-- Single-instance guard, rotating logs, and settings preserved across add-on updates.
+- GitHub Releases update checker and assisted incremental updater with SHA-256 verification, executable backup, and rollback; settings, shortcuts, and logs are preserved.
 - Self-contained Windows x64 executable; end users do not need to install the .NET runtime.
 
 ## Default shortcuts
@@ -34,20 +34,17 @@ All twelve actions can be configured independently in the settings panel. Each h
 
 Keep NumLock on when using numeric Numpad keys. The add-on uses the Windows `RegisterHotKey` API and Windows virtual-key codes, so special keys can behave differently depending on keyboard firmware.
 
-## Next/Previous synchronization limitation
+## Next/Previous navigation
 
-The PhoneBox agent exposes `GET /api/config` for the enabled page order and `POST /api/goto/{page}` for navigation. The public local API inspected for this project does **not** report which page is currently visible on the phone.
+PhoneBox **0.9.31** adds the official `POST /api/goto/next` and `POST /api/goto/prev` webhooks. The add-on sends these commands directly to the PhoneBox agent, which uses the page actually displayed on the phone and enforces the list boundaries: navigation stops at the first and last pages instead of wrapping around.
 
-The add-on therefore maintains a local navigation cursor:
-
-1. It starts at **Navigation start/current position** (default: page 1).
-2. A direct page shortcut updates and persists the cursor after PhoneBox accepts the navigation request.
-3. Next/Previous moves one position through enabled pages, persists the new position, and wraps at either end.
-4. The last accepted cursor is preserved across add-on restarts. If the page is changed by touch, swipe, PhoneBox rules, or another controller, update the current position in the add-on settings before using Next/Previous again.
-
-The page count/order is discovered dynamically, so relative navigation supports more than ten pages even though there are only ten direct page slots. Navigation sends stable page IDs to the `/api/goto` webhook instead of relying on numeric URL indexes.
+This keeps navigation synchronized after touch, swipe, PhoneBox rules, or another controller changes the page. PhoneBox 0.9.31 or later is required for these shortcuts.
 
 **Per-phone page profiles:** this version reads the global page list from `/api/config` without an `X-PhoneBox-Device` header. If you configured different page lists under PhoneBox → Settings → Phones, verify that the global list matches the connected panel; automatic per-phone profile selection is not included yet.
+
+## Automatic updates
+
+The settings panel checks stable GitHub Releases. When a newer version is available, it can download the official package, verify its SHA-256 checksum, and replace only the installed executable. The add-on closes and restarts automatically; `settings.json`, logs, and Start Menu shortcuts remain untouched. Automatic updates require an installation created by the project installer.
 
 ## Requirements
 
@@ -110,7 +107,7 @@ Settings remain outside the installation directory and are migrated between vers
 - The local settings server binds only to `127.0.0.1`, normally port `47831` with fallback through `47851`; it is not exposed to the LAN.
 - The server validates `Host` and `Origin`, limits request sizes, and sets a Content Security Policy.
 - PhoneBox URL validation requires local HTTP loopback. The client disables proxies and redirects and calls only fixed endpoints: `/api/config`, `/api/push`, and `/api/goto/{page}`.
-- No cloud, telemetry, account, or remote service is used. The add-on does not request elevation.
+- No account, telemetry, or remote-control service is used. The only external connection is the optional GitHub Releases check/download for the add-on itself. The add-on does not request elevation.
 - The local settings server does not use an authentication token: `Host`/`Origin` checks are browser-origin protections, not authentication against other processes already running under the same Windows account. Do not run untrusted local software alongside the add-on.
 - During shortcut capture, global registrations are temporarily suspended so the browser can receive key events. A 60-second lease restores them if the page closes unexpectedly.
 - Releases are not Authenticode-signed in this version; SmartScreen may warn about downloaded executables. Verify the source, release and SHA-256 before running.
@@ -119,7 +116,7 @@ Settings remain outside the installation directory and are migrated between vers
 
 - Windows 11 x64 on .NET 10-supported releases; Windows 10 only on Enterprise/LTSC editions and releases that remain within Microsoft's support lifecycle and are compatible with .NET 10.
 - The PhoneBox agent must be running and reachable at the configured address.
-- Next/Previous uses the local cursor described above; the inspected PhoneBox API does not report the currently visible phone page.
+- Next/Previous requires PhoneBox 0.9.31 or later because it uses the native relative-navigation webhooks.
 - Windows can refuse global hotkeys already registered by another application; choose another combination in Settings.
 - The executable is not Authenticode-signed yet.
 - Global key capture, USB navigation, Startup integration, and self-contained publishing still require acceptance testing on a real Windows machine.

@@ -17,36 +17,38 @@ The built-in self-test verifies:
 - Hotkey registration, suspension, and re-registration through the owning window thread.
 - Default Next/Previous Numpad + and Numpad - mappings.
 - Modifier validation and duplicate detection across all direct and relative actions.
-- Relative cursor wraparound, configured-start fallback, and direction handling.
+- Relative navigation uses the official PhoneBox 0.9.31 `/api/goto/next` and `/api/goto/prev` webhooks without a local cursor.
+- Native PhoneBox relative-navigation endpoint paths and SHA-256 checksum parsing for the update package.
+- Embedded update-helper resource presence.
 - Loopback URL validation and settings JSON round-trip.
 - Dispatch to the HWND-owning thread and rejection of off-thread hotkey manager mutation.
 
 ## Manual Windows acceptance checklist
 
-1. Install with `powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1`.
+1. Install with `powershell -ExecutionPolicy Bypass -File .\\scripts\\install.ps1`.
 2. Open **Start Menu → PhoneBox Keyboard Add-on → Configurações**.
-3. Confirm the PhoneBox connection test succeeds while the PhoneBox agent is running.
-4. Refresh the page list and compare the count/order with enabled global pages in PhoneBox. If you use per-phone page profiles, confirm that the global list matches the connected panel; automatic profile selection is not supported in this release.
-5. With at least ten enabled pages, configure and test all direct slots 1–10. Confirm Numpad 0 can be used for page 10.
-6. Test Next/Previous with a PhoneBox panel containing more than ten enabled pages; confirm all pages can be reached using relative navigation.
-7. Test wraparound from the last page to the first and from the first to the last.
-8. Navigate to a page by touch/swipe in PhoneBox, select that page in **Posição inicial / sincronizar navegação relativa**, save, and verify Next/Previous continues from that position.
-9. Trigger a direct-page shortcut and then Next/Previous; confirm the cursor follows the last accepted direct navigation.
-10. Simulate a PhoneBox connection failure while pressing Next/Previous; verify the local cursor is not committed when the HTTP navigation fails.
-11. Change each shortcut with **Capturar**, including a combination already registered by the add-on. Confirm the add-on suspends its hotkeys while listening, accepts the new combination, and restores hotkeys after capture and save. Repeat Save and Capture several times.
-12. Cancel capture and confirm all previous hotkeys are restored. Close the settings tab while capture is active and confirm the 60-second lease restores hotkeys automatically.
-13. Disable one direct slot, Next, and Previous individually; confirm each stops firing. Re-enable them and confirm they work.
-14. Disable all shortcuts and confirm every action is inactive; re-enable them.
-15. Configure a duplicate combination between a direct page and Next/Previous; confirm the settings API rejects it with a clear validation message.
-16. Reserve a conflicting hotkey in another application and confirm the UI reports that Windows could not register it.
-17. Enable startup, sign out/in or restart Windows, and confirm the add-on starts without a console, main window, or tray icon.
-18. Open Settings from the Start Menu while the background instance is running and confirm a second process is not created.
-19. Update the executable and confirm settings are migrated/preserved.
-20. Run `scripts\uninstall.ps1`; confirm the app and shortcuts are removed while settings/logs remain unless `-RemoveSettings` is specified.
+3. Confirm the PhoneBox connection test succeeds while PhoneBox 0.9.31 or later is running.
+4. With at least ten enabled pages, configure and test all direct slots 1–10. Confirm Numpad 0 can be used for page 10.
+5. Test Next/Previous on a panel with more than ten enabled pages.
+6. Confirm Next stops at the last page and Previous stops at the first page (no wraparound).
+7. Navigate to a different page by touch/swipe, then use Next/Previous and confirm PhoneBox advances from the page actually displayed.
+8. Trigger a direct-page shortcut and then Next/Previous; confirm PhoneBox follows its current page state.
+9. Simulate a PhoneBox connection failure while pressing Next/Previous; verify the add-on reports the request failure.
+10. Change each shortcut with **Capturar**, including a combination already registered by the add-on. Confirm the add-on suspends its hotkeys while listening, accepts the new combination, and restores hotkeys after capture and save. Repeat Save and Capture several times.
+11. Cancel capture and confirm all previous hotkeys are restored. Close the settings tab while capture is active and confirm the 60-second lease restores hotkeys automatically.
+12. Disable one direct slot, Next, and Previous individually; confirm each stops firing. Re-enable them and confirm they work.
+13. Disable all shortcuts and confirm every action is inactive; re-enable them.
+14. Configure a duplicate combination between a direct page and Next/Previous; confirm the settings API rejects it with a clear validation message.
+15. Reserve a conflicting hotkey in another application and confirm the UI reports that Windows could not register it.
+16. Enable startup, sign out/in or restart Windows, and confirm the add-on starts without a console, main window, or tray icon.
+17. Open Settings from the Start Menu while the background instance is running and confirm a second process is not created.
+18. Publish a test release, open the settings panel, confirm the update notice and version comparison, then run the update. Confirm the checksum is validated, only the installed executable is replaced, settings/logs/shortcuts remain intact, and the add-on restarts.
+19. Simulate a bad package/checksum and confirm installation is refused without changing the installed executable. Simulate a helper replacement/startup failure and confirm the previous executable is restored.
+20. Run `scripts\\uninstall.ps1`; confirm the app and shortcuts are removed while settings/logs remain unless `-RemoveSettings` is specified.
 
-## Known navigation limitation
+## Next/Previous navigation
 
-PhoneBox does not currently expose the phone's visible page in the public local API. Relative navigation therefore uses the add-on's last-known cursor. It is exact after add-on page shortcuts and after manually setting the cursor in Settings, but it cannot automatically detect page changes made by touch, swipe, PhoneBox rules, volume keys, or another controller.
+PhoneBox 0.9.31 or later is required. The add-on delegates relative navigation to the official `POST /api/goto/next` and `/api/goto/prev` webhooks; PhoneBox handles the current-page state and stops at the first/last page.
 
 ## Environment limitations
 

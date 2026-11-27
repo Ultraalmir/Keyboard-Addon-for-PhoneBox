@@ -17,7 +17,7 @@ internal sealed class AddonApplicationContext : ApplicationContext
         _store = new ConfigStore();
         var settings = _store.Load();
         _phoneBox = new PhoneBoxClient();
-        _hotkeys = new HotkeyManager(_phoneBox, settings, _store.SaveNavigationCursor);
+        _hotkeys = new HotkeyManager(_phoneBox, settings);
         _window = new HotkeyWindow(_hotkeys, ExitThread);
         _hotkeys.AttachWindow(_window.Handle);
         _hotkeys.Apply(settings);

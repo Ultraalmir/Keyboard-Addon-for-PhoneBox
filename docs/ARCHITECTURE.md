@@ -8,7 +8,8 @@ PhoneBox Keyboard Add-on is an independent Windows companion. It does not patch,
 - **Global shortcut manager:** uses Windows `RegisterHotKey` and `WM_HOTKEY`. The hidden HWND owns every registration. HTTP worker requests are marshalled to that HWND's thread using a private window message and a concurrent work queue.
 - **PhoneBox HTTP client:** sends `POST /api/goto/{page}?countdown=0` to the local PhoneBox agent. The default endpoint is `http://127.0.0.1:8765`.
 - **Page discovery:** reads `GET /api/config`, then extracts enabled pages in PhoneBox order. This endpoint is used to validate direct page positions and to calculate Next/Previous targets. The page list is cached for up to 10 seconds and can be force-refreshed from the settings page. This version requests the global page list (no `X-PhoneBox-Device` header); per-phone page-profile selection is not implemented.
-- **Relative navigation cursor:** stores the last page position requested by this add-on. Next/Previous advances or retreats within the currently enabled page list, wrapping at either end. The cursor is initialized from `NavigationStartPage` and updated by direct/relative add-on shortcuts. Navigation requests use stable PhoneBox page IDs instead of numeric URL segments.
+- **Relative navigation:** on PhoneBox 0.9.31 or later, Next/Previous sends the official `POST /api/goto/next` and `POST /api/goto/prev` webhooks. The PhoneBox agent resolves the currently displayed page and stops at the first/last page; the add-on no longer keeps a local navigation cursor. Direct page requests use stable PhoneBox page IDs instead of numeric URL segments.
+- **Update manager:** checks the latest stable GitHub Release, downloads the release ZIP and SHA256SUMS file, validates the package hash and expected executable entry, then starts an embedded PowerShell helper. The helper waits for the installed process to exit, stages and replaces only the executable, keeps a backup until the new process starts, and restores the previous executable if replacement/startup fails.
 - **Local settings server:** serves the embedded HTML page and a small JSON API on IPv4 loopback only. The listener tries ports 47831 through 47851. Host and Origin checks reject requests addressed through other hosts or origins. During shortcut capture, the server temporarily unregisters global shortcuts so the browser can receive key events; a 60-second server-side lease restores them if the settings page closes unexpectedly.
 - **Configuration store:** persists JSON under `%APPDATA%\PhoneBoxKeyboardAddon`. Older schemas are normalized/migrated while preserving existing page 1–7 bindings, adding slots 8–10 and Next/Previous, and keeping tray visibility off by default. Logs are stored under `%LOCALAPPDATA%\PhoneBoxKeyboardAddon\Logs`.
 - **Startup integration:** an optional per-user `.lnk` in the Windows Startup folder starts the hidden executable. No administrator rights or Run registry key is needed.
@@ -28,39 +29,29 @@ The default direct bindings preserve the previous seven shortcuts: `Ctrl + Numpa
 
 All active combinations are checked for duplicates before saving. Windows reports conflicts when another application already owns a combination. At least one modifier (Ctrl, Alt, Shift, or Win) is required.
 
-## Next/Previous limitation and synchronization
+## Next/Previous navigation
 
-The PhoneBox public API exposes `POST /api/goto/{page}` and the public page configuration, but not the page currently visible on the phone. The add-on cannot reliably infer touch/swipe navigation, rules, volume-key navigation, or page changes made by another controller.
-
-For this reason, Next/Previous uses an add-on-maintained cursor:
-
-1. At startup, the cursor uses `NavigationStartPage` (default: 1).
-2. A direct page shortcut moves the cursor to that page.
-3. Next/Previous moves one position in the enabled PhoneBox page list and wraps at the beginning/end.
-4. After changing the PhoneBox page outside this add-on, set **Navigation start/current position** in the settings page to the page currently visible and save. This resynchronizes the cursor.
-
-The add-on detects the page count and order dynamically, so relative navigation can reach more than ten pages even though there are only ten direct shortcut slots.
+PhoneBox 0.9.31 owns relative navigation. The add-on does not calculate a destination or maintain a local cursor. It sends `POST /api/goto/next` or `POST /api/goto/prev`; PhoneBox resolves the page currently displayed on the connected phone and stops at the first/last page. This avoids stale state when the user navigates manually or through PhoneBox rules.
 
 ## Data flow
 
 1. Windows detects a modifier + key combination registered through `RegisterHotKey`.
 2. Windows delivers `WM_HOTKEY` to the add-on's hidden message-only window.
-3. The add-on loads the current settings and reads the enabled page list (10-second cache).
-4. Direct actions select a fixed one-based page position; Next/Previous updates the local cursor with wraparound.
-5. The HTTP client sends `POST /api/goto/{page}?countdown=0` to PhoneBox.
-6. PhoneBox emits its existing `goto` event to the connected device.
+3. Direct actions read the enabled page list (10-second cache), select a fixed one-based position, and send `POST /api/goto/{page}?countdown=0` using the stable page ID.
+4. Next/Previous sends the official `POST /api/goto/next` or `POST /api/goto/prev` webhook.
+5. PhoneBox resolves the currently displayed page and emits the navigation event to the connected device.
 
 ## Security boundaries
 
 - The settings server binds to `IPAddress.Loopback`, never to `IPAddress.Any`.
 - The local settings API accepts requests only with the expected `Host`; requests with an `Origin` must match the local origin.
 - The PhoneBox destination is restricted to loopback HTTP. The HTTP client disables proxy use and redirects and calls only fixed endpoints.
-- No cloud account, telemetry, or remote command endpoint is added. The local settings API has no bearer token and is intended for the signed-in user's local processes; Host/Origin validation is a browser-origin defense, not authentication against other software already running under the same Windows account.
+- No cloud account, telemetry, or remote command endpoint is added. The only external requests are the optional GitHub Releases metadata/package/checksum requests used by the update feature. The local settings API has no bearer token and is intended for the signed-in user's local processes; Host/Origin validation is a browser-origin defense, not authentication against other software already running under the same Windows account.
 - The process runs as the signed-in user and does not request elevation.
 
 ## Update compatibility
 
-The add-on is installed separately under `%LOCALAPPDATA%\Programs\PhoneBoxKeyboardAddon`. Settings and logs remain outside the install directory and are schema-migrated independently, so updating PhoneBox or the add-on does not require patching PhoneBox files. Relative navigation depends on PhoneBox continuing to expose its documented `/api/config` and `/api/goto/{page}` endpoints.
+The add-on is installed separately under `%LOCALAPPDATA%\Programs\PhoneBoxKeyboardAddon`. Settings and logs remain outside the install directory and are schema-migrated independently, so updating PhoneBox or the add-on does not require patching PhoneBox files. Direct page shortcuts depend on PhoneBox exposing `/api/config` and `/api/goto/{page}`; relative navigation requires PhoneBox 0.9.31 or later and its `/api/goto/next` and `/api/goto/prev` webhooks.
 
 
 ## Ícone personalizado e desinstalação (v1.3.0)

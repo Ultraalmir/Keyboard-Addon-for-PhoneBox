@@ -4,7 +4,7 @@
 
 Complemento independente para Windows que permite navegar pelas páginas do PhoneBox com atalhos globais de teclado. Não altera, injeta ou substitui arquivos do PhoneBox.
 
-![Versão](https://img.shields.io/badge/version-1.4.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Versão](https://img.shields.io/badge/version-1.5.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Recursos
 
@@ -15,7 +15,7 @@ Complemento independente para Windows que permite navegar pelas páginas do Phon
 - Painel bilíngue com seletor Português (Brasil) / English; o idioma escolhido é salvo e mantido após reinicializações e atualizações.
 - Operação silenciosa em segundo plano: sem console ou janela principal; o ícone da bandeja é opcional e controlado no painel HTML.
 - Inicialização opcional com o Windows, usando um atalho na pasta Startup do usuário.
-- Prevenção de instâncias duplicadas, log com rotação e configurações preservadas ao atualizar o complemento.
+- Verificador de novas versões integrado ao painel e atualização incremental assistida, com checksum SHA-256, backup e rollback; atalhos, preferências e logs são preservados.
 - Executável Windows x64 autocontido; o usuário final não precisa instalar o runtime .NET.
 
 ## Como os atalhos funcionam
@@ -35,20 +35,17 @@ Essas combinações são apenas os padrões. O usuário pode capturar outra comb
 
 Para teclas numéricas do teclado numérico, mantenha o NumLock ligado. O sistema usa `RegisterHotKey` e os códigos virtuais do Windows, portanto teclas especiais do teclado podem ter comportamento diferente conforme o firmware do dispositivo.
 
-## Próxima página e Página anterior: observação importante
+## Próxima página e Página anterior
 
-O agente PhoneBox disponibiliza `GET /api/config` para consultar a ordem das páginas habilitadas e `POST /api/goto/{page}` para solicitar uma navegação. A API pública analisada não informa qual página está visível no telefone naquele momento.
+A partir do PhoneBox **0.9.31**, o agente oferece os webhooks oficiais `POST /api/goto/next` e `POST /api/goto/prev`. O complemento envia esses comandos diretamente ao PhoneBox, que consulta a página realmente exibida no telefone e controla os limites da lista: a navegação para na primeira e na última página, sem circular.
 
-Por isso, o complemento mantém um **cursor local** para as ações Próxima/Anterior:
-
-1. O cursor começa na posição escolhida em **Posição inicial / sincronizar navegação relativa** (padrão: página 1).
-2. Um atalho direto para Página N atualiza e salva o cursor em N quando o PhoneBox aceita a solicitação.
-3. Próxima/Anterior avança ou retrocede uma posição na lista de páginas habilitadas, salva a nova posição e dá a volta nas extremidades.
-4. O último cursor aceito é preservado entre reinicializações do complemento. Se a página for alterada manualmente no telefone, por gesto, por uma regra do PhoneBox ou por outro controlador, ajuste a posição atual no painel antes de continuar usando Próxima/Anterior.
-
-O complemento detecta dinamicamente a quantidade e a ordem das páginas habilitadas. Assim, Próxima/Anterior também funciona em painéis com mais de dez páginas, embora existam apenas dez atalhos diretos. A navegação envia o ID estável da página para o webhook `/api/goto`, em vez de depender de um índice numérico.
+Isso mantém a navegação sincronizada mesmo quando a página muda por toque, gesto, regra do PhoneBox ou outro controlador. Para usar esses atalhos, atualize o PhoneBox para a versão 0.9.31 ou posterior.
 
 **Perfis por telefone:** nesta versão, a descoberta usa a lista global de páginas retornada por `/api/config` sem o cabeçalho `X-PhoneBox-Device`. Se você configurou listas de páginas diferentes em PhoneBox → Settings → Phones para cada aparelho, confira se a lista global corresponde ao painel conectado; a seleção automática de perfil por telefone ainda não faz parte desta versão.
+
+## Atualização automática
+
+O painel consulta as releases estáveis do GitHub. Quando encontra uma versão nova, permite baixar o pacote oficial, validar o SHA-256 e substituir somente o executável instalado. O complemento é fechado e reiniciado automaticamente; `settings.json`, logs e atalhos do Menu Iniciar permanecem intactos. A atualização automática exige que o complemento tenha sido instalado pelo instalador do projeto.
 
 ## Requisitos
 
@@ -110,8 +107,8 @@ As configurações são armazenadas fora da pasta de instalação e migradas aut
 
 - O servidor da interface escuta somente em `127.0.0.1`, normalmente na porta `47831` (com fallback até `47851`); não é exposto à rede local.
 - O servidor valida os cabeçalhos `Host` e `Origin`, limita o tamanho das requisições e usa uma política CSP.
-- O destino do PhoneBox é restrito a HTTP em endereço loopback. O cliente não usa proxy, não segue redirecionamentos e chama apenas os endpoints fixos `/api/config`, `/api/push` e `/api/goto/{page}`.
-- O complemento não usa nuvem, telemetria, contas ou serviços remotos. Não solicita elevação de privilégios.
+- O destino do PhoneBox é restrito a HTTP em endereço loopback. O cliente não usa proxy, não segue redirecionamentos e chama apenas os endpoints locais `/api/config`, `/api/push`, `/api/goto/{page}`, `/api/goto/next` e `/api/goto/prev`. O verificador de versões consulta somente a API pública de Releases do repositório GitHub do projeto.
+- O complemento não usa conta, telemetria ou serviço de controle remoto. A única comunicação externa é a consulta/transferência opcional de releases do GitHub para verificar e atualizar o próprio complemento. Não solicita elevação de privilégios.
 - O servidor local não usa token de autenticação: as verificações de `Host` e `Origin` protegem o painel contra acesso web remoto/rebinding, mas não são uma barreira contra outros processos já executados na mesma conta do Windows. Não execute software local não confiável junto ao complemento.
 - Durante a captura de um atalho, os registros globais são suspensos temporariamente para que o navegador receba o teclado. Uma lease de 60 segundos restaura os atalhos se a página fechar inesperadamente.
 - As releases não são assinadas com Authenticode nesta versão; o SmartScreen pode exibir um aviso para executáveis baixados. Verifique o código-fonte, a release e o SHA-256 antes de executar.
@@ -126,7 +123,7 @@ O cartão **Atalhos registrados** recebe totais calculados pelo agente (`registe
 
 - Windows 11 x64 em versões compatíveis com .NET 10; Windows 10 somente em edições Enterprise/LTSC e versões que permaneçam dentro do ciclo de suporte da Microsoft e sejam compatíveis com .NET 10.
 - O PhoneBox precisa estar em execução e acessível no endereço configurado.
-- Próxima/Anterior usa o cursor local descrito acima; a API PhoneBox analisada não informa a página atualmente visível no telefone.
+- Próxima/Anterior exige PhoneBox 0.9.31 ou posterior, pois utiliza os webhooks nativos de navegação relativa.
 - Se outra aplicação já possuir uma combinação global, o Windows pode recusar o registro. Escolha outra combinação no painel.
 - O executável ainda não possui assinatura Authenticode.
 - A captura global, USB, integração Startup e publicação autocontida precisam ser validadas em um Windows real. O ambiente de desenvolvimento não deve ser tratado como prova de funcionamento no computador do usuário.
