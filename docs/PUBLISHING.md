@@ -6,7 +6,7 @@ Este documento é destinado a mantenedores e colaboradores. Usuários finais dev
 
 - URL: https://github.com/Ultraalmir/Keyboard-Addon-for-PhoneBox
 - Branch principal: `main`
-- Versão atual documentada: `1.5.0`
+- Versão em preparação: `1.5.1`
 
 ## Requisitos para compilar
 
@@ -78,7 +78,7 @@ Não inclua executáveis locais, arquivos `bin/`, `obj/`, `artifacts/`, logs ou 
 
 O workflow **CI** é acionado em pushes para `main`/`master`, pull requests e execução manual. Ele restaura, compila, executa os self-tests, valida os scripts PowerShell e publica um pacote de teste como artefato.
 
-Antes de publicar uma Release, confirme que o CI da versão desejada terminou com sucesso. Atualize a versão nos arquivos pertinentes (`README.md`, `README.en.md`, projeto e `CHANGELOG.md`), crie o commit e envie para `main`. Depois crie e envie a tag correspondente, substituindo `vX.Y.Z` pela versão escolhida:
+Antes de publicar uma Release, confirme que o CI da versão desejada terminou com sucesso. Atualize a versão em todos os pontos de origem: `src/PhoneBoxKeyboardAddon/PhoneBoxKeyboardAddon.csproj` (`Version` e `InformationalVersion`), `src/PhoneBoxKeyboardAddon/AddonPaths.cs` (`ProductInfo.Version`), badges dos dois READMEs e `docs/PUBLISHING.md`; registre as mudanças no `CHANGELOG.md`, crie o commit e envie para `main`. Depois crie e envie a tag correspondente, substituindo `vX.Y.Z` pela versão escolhida:
 
 ```powershell
 git tag vX.Y.Z

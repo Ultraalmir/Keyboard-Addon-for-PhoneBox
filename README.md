@@ -4,7 +4,7 @@
 
 Complemento independente para Windows que permite navegar pelas páginas do PhoneBox com atalhos globais de teclado. Não altera, injeta ou substitui arquivos do PhoneBox.
 
-![Versão](https://img.shields.io/badge/version-1.5.0-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Versão](https://img.shields.io/badge/version-1.5.1-6478f5) ![Windows](https://img.shields.io/badge/platform-Windows%2011%20%7C%20supported%2010%20LTSC-0078D4) ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Recursos
 
@@ -44,6 +44,8 @@ Isso mantém a navegação sincronizada mesmo quando a página muda por toque, g
 **Perfis por telefone:** nesta versão, a descoberta usa a lista global de páginas retornada por `/api/config` sem o cabeçalho `X-PhoneBox-Device`. Se você configurou listas de páginas diferentes em PhoneBox → Settings → Phones para cada aparelho, confira se a lista global corresponde ao painel conectado; a seleção automática de perfil por telefone ainda não faz parte desta versão.
 
 ## Atualização automática
+
+O atualizador integrado foi introduzido na versão 1.5.0. Instalações anteriores, como a 1.4.0, precisam ser atualizadas manualmente uma vez usando o instalador da Release 1.5.0; a partir dela, versões posteriores podem usar a atualização integrada. A atualização automática só funciona para instalações feitas pelo instalador do projeto.
 
 O painel consulta as releases estáveis do GitHub. Quando encontra uma versão nova, permite baixar o pacote oficial, validar o SHA-256 e substituir somente o executável instalado. O complemento é fechado e reiniciado automaticamente; `settings.json`, logs e atalhos do Menu Iniciar permanecem intactos. A atualização automática exige que o complemento tenha sido instalado pelo instalador do projeto.
 
@@ -135,6 +137,10 @@ Consulte `docs/ARCHITECTURE.md`, `docs/TEST-PLAN.md`, `docs/PUBLISHING.md`, `CON
 ## Licença e afiliação
 
 Licença MIT. Este é um complemento independente da comunidade; não é um componente oficial nem é afiliado aos mantenedores do PhoneBox.
+
+## Cartão de estado
+
+O cartão de estado apresenta separadamente o total de ações configuráveis, as ações habilitadas e os atalhos efetivamente registrados pelo Windows. Esses números podem diferir quando uma combinação está em conflito com outro aplicativo.
 
 ## Ícone do painel HTML
 

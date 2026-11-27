@@ -21,5 +21,5 @@ internal static class AddonPaths
 internal static class ProductInfo
 {
     internal const string Name = "PhoneBox Keyboard Add-on";
-    internal const string Version = "1.5.0";
+    internal const string Version = "1.5.1";
 }

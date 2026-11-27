@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-11-26
+
+### Documentation
+- Clarify that upgrades from 1.4.0 require one manual installation of 1.5.0 before in-app updates are available.
+- Align version references and maintainer instructions with the 1.5.1 release candidate.
+- Document the status-card counters separately from tray-icon behavior.
+
 ## [1.5.0] - 2026-11-26
 
 ### Added
