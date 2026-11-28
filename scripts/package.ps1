@@ -65,7 +65,10 @@ $launcherIsCurrent = Test-PublishedExecutable -Path $launcherExe -ExpectedVersio
 $sourceIsNewer = $false
 
 if ($appIsCurrent -and $launcherIsCurrent) {
-    $sourceFiles = @(Get-ChildItem -LiteralPath (Join-Path $root 'src') -File -Recurse)
+    $sourceFiles = @(
+        Get-ChildItem -LiteralPath (Join-Path $root 'src') -File -Recurse |
+            Where-Object { $_.FullName -notmatch '[\\/](?:bin|obj)[\\/]' }
+    )
     if ($sourceFiles.Count -eq 0) {
         throw 'Nenhum arquivo-fonte foi encontrado em src/.'
     }
